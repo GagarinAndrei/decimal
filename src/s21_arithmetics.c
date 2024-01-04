@@ -56,6 +56,15 @@ int s21_add(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
   return 0;
 }
 
+/**
+ * Вычитовка децла из децла
+ * @param value_1 Децл, из которого нужно вычесть
+ * @param value_2 Вычитаемый децл
+ * @param result Децл, в который записывается результат вычитовки
+ * @return 0 - OK
+ * 1 - число слишком велико или равно бесконечности
+ * 2 - число слишком мало или равно отрицательной бесконечности
+*/
 int s21_sub(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
   bcd value_1_in_bcd, value_2_in_bcd, result_in_bcd;
 

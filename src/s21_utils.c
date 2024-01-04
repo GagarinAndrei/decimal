@@ -2,6 +2,13 @@
 
 #include "s21_decimal.h"
 
+/**
+ * Получить значение нужного бита s21_decimal
+ * @param value Проверяемый decimal
+ * @param bit Проверяемый бит (0 - 127)
+ * @return  Значение бита ( 0 | 1 )
+ * 
+*/
 int get_bit(s21_decimal value, int bit) {
   int result;
   int index = bit / 32;
@@ -11,12 +18,24 @@ int get_bit(s21_decimal value, int bit) {
   return result;
 }
 
+/**
+ * Установить значение в 1 нужного бита s21_decimal
+ * @param value Проверяемый decimal
+ * @param bit Проверяемый бит (0 - 127)
+ * 
+*/
 void set_bit(s21_decimal *value, int bit) {
   int index = bit / 32;
   unsigned int mask = 1 << (bit % 32);
   value->bits[index] |= mask;
 }
 
+/**
+ * Установить значение в 0 нужного бита s21_decimal
+ * @param value Проверяемый decimal
+ * @param bit Проверяемый бит (0 - 127)
+ * 
+*/
 void unset_bit(s21_decimal *value, int bit) {
   int index = bit / 32;
   unsigned int mask = ~(1 << (bit % 32));
@@ -133,6 +152,40 @@ void print_bits_decimal(s21_decimal number) {
   }
 }
 
+/**
+ * Проверяет s21_decimal на ноль
+ * @param value проверяемый элемент
+ * @return 1 - равен 0,
+ * 0 - не равен
+*/
+int check_decimal_for_zero(s21_decimal value) {
+  int result = 0;
+  for(int i = 0; i < BYTES_IN_DECIMAL; i++) {
+    if(value.bits[i] == 0) {
+      result = 1;
+    }
+  }
+
+  return result;
+}
+
+/**
+ * Проверяет bcd на ноль
+ * @param value проверяемый элемент
+ * @return 1 - равен 0,
+ * 0 - не равен
+*/
+int check_bcd_for_zero(bcd value) {
+  int result = 0;
+  for(int i = 0; i < BYTES_IN_BCD; i++) {
+    if(value.bits[i] == 0) {
+      result = 1;
+    }
+  }
+
+  return result;
+}
+
 void normalize_scale(bcd *number_1, bcd *number_2) {
   int32_t max_scale =
       (number_1->scale > number_2->scale) ? number_1->scale : number_2->scale;
@@ -162,6 +215,10 @@ void full_convert_two_bcd_with_normalize(s21_decimal *value_1,
   normalize_scale(value_1_in_bcd, value_2_in_bcd);
 }
 
+/**
+ * Обнуление bcd
+ * @param value адрес на нужный элемент
+*/
 void reset_bcd(bcd *value) {
   for (int i = 0; i < BYTES_IN_BCD; i++) {
     value->bits[i] = 0;
@@ -170,7 +227,17 @@ void reset_bcd(bcd *value) {
   value->sign = 0;
 }
 
-void bcd_add(bcd value_1, bcd value_2, bcd *result_in_bcd) {
+/**
+ * Обнуление s21_decimal
+ * @param value адрес на нужный элемент
+*/
+void reset_decimal(s21_decimal *value) {
+  for(int i = 0; i < BYTES_IN_DECIMAL; i++) {
+    value->bits[i] = 0;
+  }
+}
+ 
+void tmp_result_of_adding(bcd value_1, bcd value_2, bcd *result_in_bcd) {
   unsigned int mask;
   int unit_in_mind = 0;
   int temp_result;
@@ -215,34 +282,45 @@ void bcd_diff(bcd value_1, bcd value_2, bcd *result_in_bcd) {
   }
 }
 
-void bcd_mult(bcd value_1_in_bcd, bcd value_2_in_bcd,
-                        bcd *result_in_bcd) {
-  unsigned int mask_1;
-  unsigned int mask_2;
+void bcd_mult(bcd value_1_in_bcd, bcd value_2_in_bcd, bcd *result_in_bcd) {
+    unsigned int mask_1;
+    unsigned int mask_2;
+    // int value_in_mind = 0;
 
-  int unit_in_mind = 0;
-  int numeric_digit;
-  int temp_result;
-
-  for (size_t i = 0; i < BYTES_IN_BCD; i++) {
-    numeric_digit = 0;
-    for (size_t iii = 0; iii < 32; iii += 4) {
-      for (size_t ii = 0; ii < 32; ii += 4) {
+    int intermediate_result = 0;
+    s21_decimal temp_result;
+    bcd temp_result_bcd;
+    
+    for (int i = 0; i < 1; i++) {
+      for(int ii = 0; ii < INT_BIT; ii += 4) {
         mask_1 = 15 << (ii);
-        mask_2 = 15 << (iii);
-        temp_result = ((value_1_in_bcd.bits[i] & mask_1) >> ii) *
-                          ((value_2_in_bcd.bits[i] & mask_2) >> iii) +
-                      unit_in_mind;
-        unit_in_mind = 0;
-        if (temp_result > 9) {
-          unit_in_mind = temp_result / 10;
-          temp_result = temp_result % 10;
+        // printf("value_1_in_bcd.bits[i] = %d\n", value_1_in_bcd.bits[i]);
+        int value_1_last_num = (value_1_in_bcd.bits[i] & mask_1) >> ii;
+        // printf("value_1_last_num = %d\n", value_1_last_num);
+        intermediate_result = 0;
+
+        for(int iii = 0; iii < INT_BIT; iii += 4) {
+          mask_2 = 15 << (iii);
+          int value_2_last_num = (value_2_in_bcd.bits[i] & mask_2) >> iii;
+          // printf("value_2_last_num = %d\n", value_2_last_num);
+          intermediate_result += (value_1_last_num * value_2_last_num) * pow(10, iii / 4);
+          // printf("intermediate_result = %d\n", intermediate_result);
         }
-        result_in_bcd->bits[i] |= (temp_result << (ii + 4 * numeric_digit));
+
+        reset_decimal(&temp_result);
+        reset_bcd(&temp_result_bcd);
+        s21_from_int_to_decimal(intermediate_result * pow(10, ii / 4), &temp_result);
+        decimal_to_bcd(&temp_result, &temp_result_bcd);
+        print_bits_bsd(temp_result_bcd);
+        printf("\n");
+        tmp_result_of_adding(*result_in_bcd, temp_result_bcd, result_in_bcd);
+        // temp_result += intermediate_result * pow(10, ii / 4);
       }
-      numeric_digit++;
     }
-  }
+
+    print_bits_bsd(*result_in_bcd);
+
+    result_in_bcd->bits[0] = 2;
 }
 
 void bcd_div(bcd value_1_in_bcd, bcd value_2_in_bcd, bcd *result_in_bcd) {
