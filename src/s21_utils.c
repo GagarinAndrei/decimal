@@ -237,7 +237,7 @@ void reset_decimal(s21_decimal *value) {
   }
 }
  
-void tmp_result_of_adding(bcd value_1, bcd value_2, bcd *result_in_bcd) {
+void bcd_add(bcd value_1, bcd value_2, bcd *result_in_bcd) {
   unsigned int mask;
   int unit_in_mind = 0;
   int temp_result;
@@ -303,17 +303,17 @@ void bcd_mult(bcd value_1_in_bcd, bcd value_2_in_bcd, bcd *result_in_bcd) {
           mask_2 = 15 << (iii);
           int value_2_last_num = (value_2_in_bcd.bits[i] & mask_2) >> iii;
           // printf("value_2_last_num = %d\n", value_2_last_num);
-          intermediate_result += (value_1_last_num * value_2_last_num) * pow(10, iii / 4);
+          intermediate_result += (value_1_last_num * value_2_last_num) * pow(10, (double)iii / 4);
           // printf("intermediate_result = %d\n", intermediate_result);
         }
 
         reset_decimal(&temp_result);
         reset_bcd(&temp_result_bcd);
-        s21_from_int_to_decimal(intermediate_result * pow(10, ii / 4), &temp_result);
+        s21_from_int_to_decimal(intermediate_result * pow(10, (double)ii / 4), &temp_result);
         decimal_to_bcd(&temp_result, &temp_result_bcd);
         print_bits_bsd(temp_result_bcd);
         printf("\n");
-        tmp_result_of_adding(*result_in_bcd, temp_result_bcd, result_in_bcd);
+        bcd_add(*result_in_bcd, temp_result_bcd, result_in_bcd);
         // temp_result += intermediate_result * pow(10, ii / 4);
       }
     }

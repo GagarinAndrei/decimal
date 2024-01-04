@@ -41,6 +41,9 @@ void full_convert_two_bcd_with_normalize(s21_decimal *value_1,
                                          bcd *value_2_in_bcd);
 
 void reset_bcd(bcd *value);
+void reset_decimal(s21_decimal *value);
+int check_bcd_for_zero(bcd value);
+int check_decimal_for_zero(s21_decimal value);
 
 void bcd_add(bcd value_1_in_bcd, bcd value_2_in_bcd, bcd *result_in_bcd);
 void bcd_diff(bcd value_1_in_bcd, bcd value_2_in_bcd, bcd *result_in_bcd);
