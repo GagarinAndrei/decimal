@@ -1,6 +1,7 @@
 #include "s21_utils.h"
 
 #include "s21_decimal.h"
+#include <stdint.h>
 
 /**
  * Получить значение нужного бита s21_decimal
@@ -80,6 +81,10 @@ void decimal_to_bcd(s21_decimal *decimal, bcd *bcd_number) {
     }
     left_bit_shift_decimal(decimal);
   }
+}
+
+void bcd_to_decimal(s21_decimal *decimal, bcd *bcd_number) {
+  
 }
 
 void left_bit_shift_decimal(s21_decimal *decimal) {
@@ -236,6 +241,12 @@ void reset_decimal(s21_decimal *value) {
     value->bits[i] = 0;
   }
 }
+
+// int32_t convert_bcd_to_int(bcd number) {
+//   int32_t result = 0;
+
+//   return result;
+// }
  
 void bcd_add(bcd value_1, bcd value_2, bcd *result_in_bcd) {
   unsigned int mask;
@@ -324,31 +335,11 @@ void bcd_mult(bcd value_1_in_bcd, bcd value_2_in_bcd, bcd *result_in_bcd) {
 }
 
 void bcd_div(bcd value_1_in_bcd, bcd value_2_in_bcd, bcd *result_in_bcd) {
-  unsigned int mask_1;
-  unsigned int mask_2;
-
-  int unit_in_mind = 0;
-  int numeric_digit;
-  int temp_result;
-
-
-  for (size_t i = 0; i < BYTES_IN_BCD; i++) {
-    numeric_digit = 0;
-    for (size_t iii = 0; iii < 32; iii += 4) {
-      for (size_t ii = 0; ii < 32; ii += 4) {
-        mask_1 = 15 << (ii);
-        mask_2 = 15 << (iii);
-        // temp_result = ((value_1_in_bcd.bits[i] & mask_1) >> ii) *
-        //                   ((value_2_in_bcd.bits[i] & mask_2) >> iii) +
-        //               unit_in_mind;
-        // unit_in_mind = 0;
-        if (temp_result > 9) {
-          // unit_in_mind = temp_result / 10;
-          // temp_result = temp_result % 10;
-        }
-        // result_in_bcd->bits[i] |= (temp_result << (ii + 4 * numeric_digit));
-      }
-      // numeric_digit++;
-    }
-  }
+  // unsigned int quotient = 0;
+  // while(value_1_in_bcd > value_2_in_bcd) {
+  //   bcd_diff(value_1_in_bcd, value_2_in_bcd, &value_1_in_bcd);
+  //   quotient++; 
+  // }  
+   
+  //   result_in_bcd = int_in_bcd(quotient);
 }
