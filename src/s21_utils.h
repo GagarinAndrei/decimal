@@ -29,9 +29,10 @@ void unset_bit_in_bcd(bcd *value, int bit);
 
 void left_bit_shift_decimal(s21_decimal *decimal);
 void left_bit_shift_bcd(bcd *bcd_number);
+void left_to_N_bit_shift_bcd(bcd *bcd_number, int number);
 
 void decimal_to_bcd(s21_decimal *decimal, bcd *bcd_number);
-void bcd_to_decimal(s21_decimal *decimal, bcd *bcd_number);
+void bcd_to_decimal(bcd *bcd_number, s21_decimal *decimal);
 
 void normalize_scale(bcd *number_1, bcd *number_2);
 
@@ -41,9 +42,11 @@ void full_convert_two_bcd_with_normalize(s21_decimal *value_1,
                                          bcd *value_2_in_bcd);
 
 void reset_bcd(bcd *value);
+void reset_decimal(s21_decimal *value);
 
 void tmp_result_of_adding(bcd value_1, bcd value_2, bcd *result_in_bcd);
 void tmp_result_of_diff(bcd value_1, bcd value_2, bcd *result_in_bcd);
 void tmp_result_of_mult(bcd value_1_in_bcd, bcd value_2_in_bcd,
                         bcd *result_in_bcd);
+
 #endif

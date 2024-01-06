@@ -64,7 +64,7 @@ int s21_add(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
  * @return 0 - OK
  * 1 - число слишком велико или равно бесконечности
  * 2 - число слишком мало или равно отрицательной бесконечности
-*/
+ */
 int s21_sub(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
   bcd value_1_in_bcd, value_2_in_bcd, result_in_bcd;
 
@@ -122,21 +122,29 @@ int s21_mul(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
 
   full_convert_two_bcd_with_normalize(&val1, &val2, &value_1_in_bcd,
                                       &value_2_in_bcd);
-  if (value_1_in_bcd.sign != value_2_in_bcd.sign) result_in_bcd.sign = MINUS;
-  result_in_bcd.scale = value_1_in_bcd.scale; // ?
 
-  if (s21_is_greater(value_1, value_2)) {
-    tmp_result_of_mult(value_1_in_bcd, value_2_in_bcd, &result_in_bcd);
-  } else {
-    tmp_result_of_mult(value_2_in_bcd, value_1_in_bcd, &result_in_bcd);
+  // if (s21_is_greater(value_1, value_2)) {
+  tmp_result_of_mult(value_1_in_bcd, value_2_in_bcd, &result_in_bcd);
+  // } else {
+  //   tmp_result_of_mult(value_2_in_bcd, value_1_in_bcd, &result_in_bcd);
+  // }
+
+  if (value_1_in_bcd.sign != value_2_in_bcd.sign) {
+    result_in_bcd.sign = MINUS;
   }
+  result_in_bcd.scale = value_1_in_bcd.scale;  // ?
 
-  // print_bits_bsd(result_in_bcd);
+  printf("\nresult_bcd:\n");
+  print_bits_bsd(result_in_bcd);
 
-  result->bits[0] = 1;
-  result->bits[1] = 1;
-  result->bits[2] = 1;
-  result->bits[3] = 0;
+  bcd_to_decimal(&result_in_bcd, result);
+  printf("\nresult_decimal:\n");
+  print_bits_decimal(*result);
+
+  
+  s21_decimal value_13 = {{314156789, 0, 0, 0x80000000}};
+  printf("\nОжидаемый результат:\n");
+  print_bits_decimal(value_13);
 
   return 0;
 }

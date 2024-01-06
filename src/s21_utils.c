@@ -82,6 +82,33 @@ void decimal_to_bcd(s21_decimal *decimal, bcd *bcd_number) {
   }
 }
 
+void bcd_to_decimal(bcd *bcd_number, s21_decimal *decimal) {
+  reset_decimal(decimal);
+  char bcd_string[64] = {0};
+  unsigned int mask = 15;
+  int char_counter = 0;
+  int first_number_flag = 0;
+
+  decimal->bits[3] = bcd_number->sign | bcd_number->scale << 16;
+
+  for(int i = BYTES_IN_BCD - 1; i >= 0; i--) {
+    for(int ii = 0; ii < INT_BIT; ii += 4) {
+      char current_number = ((bcd_number->bits[i] >> (INT_BIT - 4 - ii)) & mask) + 48;
+      if(current_number != '0') {
+        first_number_flag = 1;
+      } 
+      if(first_number_flag) {
+        bcd_string[char_counter++] = current_number;
+      }
+    }
+  }
+
+
+
+  printf("string = %s\n", bcd_string);
+
+}
+
 void left_bit_shift_decimal(s21_decimal *decimal) {
   for (int i = BYTES_IN_DECIMAL - 1; i >= 0; i--) {
     decimal->bits[i] <<= 1;
@@ -103,6 +130,12 @@ void left_bit_shift_bcd(bcd *bcd_number) {
         set_bit_in_bcd(bcd_number, highest_bit_in_right_int + 1);
       }
     }
+  }
+}
+
+void left_to_N_bit_shift_bcd(bcd *bcd_number, int number) {
+  for(int i = 0; i < number; i++) {
+    left_bit_shift_bcd(bcd_number);
   }
 }
 
@@ -241,8 +274,10 @@ void tmp_result_of_adding(bcd value_1, bcd value_2, bcd *result_in_bcd) {
   unsigned int mask;
   int unit_in_mind = 0;
   int temp_result;
+  bcd temp_result_in_bcd;
+  reset_bcd(&temp_result_in_bcd);
   for (int i = 0; i < BYTES_IN_BCD; i++) {
-    for (int ii = 0; ii < 32; ii += 4) {
+    for (int ii = 0; ii < INT_BIT; ii += 4) {
       mask = 15 << (ii);
       temp_result = ((value_1.bits[i] & mask) >> ii) +
                     ((value_2.bits[i] & mask) >> ii) + unit_in_mind;
@@ -251,8 +286,13 @@ void tmp_result_of_adding(bcd value_1, bcd value_2, bcd *result_in_bcd) {
         temp_result = temp_result % 10;
         unit_in_mind = 1;
       }
-      result_in_bcd->bits[i] |= (temp_result << ii);
+      temp_result_in_bcd.bits[i] |= (temp_result << ii);
     }
+  }
+
+  reset_bcd(result_in_bcd);
+  for(int i = 0; i < BYTES_IN_BCD; i++) {
+    result_in_bcd->bits[i] = temp_result_in_bcd.bits[i];
   }
 }
 
@@ -312,43 +352,88 @@ void tmp_result_of_diff(bcd value_1, bcd value_2, bcd *result_in_bcd) {
 //   }
 // }
 
+/**
+ * Умножение двух bcd
+ * @param value_1_in_bcd первый bcd
+ * @param value_2_in_bcd второй bcd
+ * @param result_in_bcd результат умножения
+*/
 void tmp_result_of_mult(bcd value_1_in_bcd, bcd value_2_in_bcd, bcd *result_in_bcd) {
     unsigned int mask_1;
     unsigned int mask_2;
-    // int value_in_mind = 0;
 
-    int intermediate_result = 0;
-    s21_decimal temp_result;
-    bcd temp_result_bcd;
+    bcd bcd_result;
+    bcd intermediate_result;
+    s21_decimal intermediate_decimal;
     
-    for (int i = 0; i < 1; i++) {
-      for(int ii = 0; ii < INT_BIT; ii += 4) {
-        mask_1 = 15 << (ii);
-        // printf("value_1_in_bcd.bits[i] = %d\n", value_1_in_bcd.bits[i]);
-        int value_1_last_num = (value_1_in_bcd.bits[i] & mask_1) >> ii;
-        // printf("value_1_last_num = %d\n", value_1_last_num);
-        intermediate_result = 0;
+    for(int i = 0; i < BYTES_IN_BCD * INT_BIT; i += 4) {  // цикл по 4 бита внутри инта первого bcd
+      mask_1 = 15 << (i); 
+      int value_1_last_num = (value_1_in_bcd.bits[i / INT_BIT] & mask_1) >> i; // последняя цифра первого числа
+      reset_bcd(&bcd_result);
 
-        for(int iii = 0; iii < INT_BIT; iii += 4) {
-          mask_2 = 15 << (iii);
-          int value_2_last_num = (value_2_in_bcd.bits[i] & mask_2) >> iii;
-          // printf("value_2_last_num = %d\n", value_2_last_num);
-          intermediate_result += (value_1_last_num * value_2_last_num) * pow(10, iii / 4);
-          // printf("intermediate_result = %d\n", intermediate_result);
-        }
+      for(int ii = 0; ii < BYTES_IN_BCD * INT_BIT; ii += 4) { // цикл по 4 бита внутри инта второго bcd
+        mask_2 = 15 << (ii);
+        int value_2_last_num = (value_2_in_bcd.bits[ii / INT_BIT] & mask_2) >> ii; // последняя цифра второго числа
 
-        reset_decimal(&temp_result);
-        reset_bcd(&temp_result_bcd);
-        s21_from_int_to_decimal(intermediate_result * pow(10, ii / 4), &temp_result);
-        decimal_to_bcd(&temp_result, &temp_result_bcd);
-        print_bits_bsd(temp_result_bcd);
-        printf("\n");
-        tmp_result_of_adding(*result_in_bcd, temp_result_bcd, result_in_bcd);
-        // temp_result += intermediate_result * pow(10, ii / 4);
+        reset_decimal(&intermediate_decimal); // обнуление промежуточного децла
+        reset_bcd(&intermediate_result);  // обнуление промежуточного bcd
+        s21_from_int_to_decimal((value_1_last_num * value_2_last_num), &intermediate_decimal); // запись в децл результата умножения последних цифр обоих чисел
+        decimal_to_bcd(&intermediate_decimal, &intermediate_result); // перевод децла в bcd
+
+        left_to_N_bit_shift_bcd(&intermediate_result, ii); // сдвиг на 4х битов результата умножения
+        
+        tmp_result_of_adding(bcd_result, intermediate_result, &bcd_result); // сложение промежуточных результатов
       }
+
+      left_to_N_bit_shift_bcd(&bcd_result, i); // сдвиг на 4х битов результата сложения
+    
+      tmp_result_of_adding(*result_in_bcd, bcd_result, result_in_bcd); // сложение всех сумм
     }
-
-    print_bits_bsd(*result_in_bcd);
-
-    result_in_bcd->bits[0] = 2;
 }
+
+// /**
+//  * Умножение двух bcd
+//  * @param value_1_in_bcd первый bcd
+//  * @param value_2_in_bcd второй bcd
+//  * @param result_in_bcd результат умножения
+// */
+// void tmp_result_of_mult(bcd value_1_in_bcd, bcd value_2_in_bcd, bcd *result_in_bcd) {
+//     unsigned int mask_1;
+//     unsigned int mask_2;
+
+//     bcd bcd_result;
+//     bcd intermediate_result;
+//     s21_decimal intermediate_decimal;
+    
+    
+//     for (int i = 0; i < BYTES_IN_BCD; i++) { // цикл по интам внутри первого bcd
+//       for(int ii = 0; ii < INT_BIT; ii += 4) {  // цикл по 4 бита внутри инта первого bcd
+        
+//         mask_1 = 15 << (ii); 
+//         int value_1_last_num = (value_1_in_bcd.bits[i] & mask_1) >> ii; // последняя цифра первого числа
+//         reset_bcd(&bcd_result);
+
+//         for(int iii = 0; iii < BYTES_IN_BCD; iii ++) {  // цикл по интам внутри второго bcd
+//           for(int iv = 0; iv < INT_BIT; iv += 4) { // цикл по 4 бита внутри инта второго bcd
+//             mask_2 = 15 << (iv);
+//             int value_2_last_num = (value_2_in_bcd.bits[iii] & mask_2) >> iv; // последняя цифра второго числа
+
+//             reset_decimal(&intermediate_decimal); // обнуление промежуточного децла
+//             reset_bcd(&intermediate_result);  // обнуление промежуточного bcd
+//             s21_from_int_to_decimal((value_1_last_num * value_2_last_num), &intermediate_decimal); // запись в децл результата умножения последних цифр обоих чисел
+//             decimal_to_bcd(&intermediate_decimal, &intermediate_result); // перевод децла в bcd
+
+//             left_to_N_bit_shift_bcd(&intermediate_result, iv + (iii * INT_BIT)); // сдвиг на 4х битов результата умножения
+            
+//             tmp_result_of_adding(bcd_result, intermediate_result, &bcd_result); // сложение промежуточных результатов
+//           }
+          
+//         }
+
+//         left_to_N_bit_shift_bcd(&bcd_result, ii + (i * INT_BIT)); // сдвиг на 4х битов результата сложения
+      
+//         tmp_result_of_adding(*result_in_bcd, bcd_result, result_in_bcd); // сложение всех сумм
+//       }
+//     }
+// }
+
