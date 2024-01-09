@@ -6,41 +6,42 @@
 // 79,228,162,514,264,337,593,543,950,335
 
 int main() {
-  s21_decimal value_1 = {{7, 0, 0, 0}};
-  s21_decimal value_2 = {{7, 0, 0, 0}};
-  s21_decimal result;
-  s21_div(value_1, value_2, &result);
+   s21_decimal value_1 = {{7, 0, 0, 0}};
+   s21_decimal value_2 = {{7, 0, 0, 0}};
+//  s21_decimal result;
+     normalize_scale(&value_1, &value_2);
+//  s21_div(value_1, value_2, &result);
   printf("\n");
 
-  s21_decimal value_3 = {{21, 0, 0, 0}};
-  s21_decimal value_4 = {{3, 0, 0, 0}};
-  s21_div(value_3, value_4, &result);
-  printf("\n");
-
-  s21_decimal value_5 = {{20, 0, 0, MINUS}};
-  s21_decimal value_6 = {{3, 0, 0, MINUS}};
-  s21_div(value_5, value_6, &result);
-  printf("\n");
-
-  s21_decimal value_7 = {{2, 0, 0, MINUS}};
-  s21_decimal value_8 = {{31, 0, 0, MINUS}};
-  s21_div(value_7, value_8, &result);
-  printf("\n");
-
-  s21_decimal value_9 = {{2, 0, 0, MINUS}};
-  s21_decimal value_10 = {{30, 0, 0, 0}};
-  s21_div(value_9, value_10, &result);
-  printf("\n");
-
-  s21_decimal value_11 = {{3, 0, 0, 0}};
-  s21_decimal value_12 = {{21, 0, 0, 0}};
-  s21_div(value_11, value_12, &result);
-  printf("\n");
-
-  s21_decimal value_13 = {{25, 0, 0, 0}};
-  s21_decimal value_14 = {{55, 0, 0, 0}};
-  s21_div(value_13, value_14, &result);
-  printf("\n");
+//  s21_decimal value_3 = {{21, 0, 0, 0}};
+//  s21_decimal value_4 = {{3, 0, 0, 0}};
+//  s21_div(value_3, value_4, &result);
+//  printf("\n");
+//
+//  s21_decimal value_5 = {{20, 0, 0, MINUS}};
+//  s21_decimal value_6 = {{3, 0, 0, MINUS}};
+//  s21_div(value_5, value_6, &result);
+//  printf("\n");
+//
+//  s21_decimal value_7 = {{2, 0, 0, MINUS}};
+//  s21_decimal value_8 = {{31, 0, 0, MINUS}};
+//  s21_div(value_7, value_8, &result);
+//  printf("\n");
+//
+//  s21_decimal value_9 = {{2, 0, 0, MINUS}};
+//  s21_decimal value_10 = {{30, 0, 0, 0}};
+//  s21_div(value_9, value_10, &result);
+//  printf("\n");
+//
+//  s21_decimal value_11 = {{3, 0, 0, 0}};
+//  s21_decimal value_12 = {{21, 0, 0, 0}};
+//  s21_div(value_11, value_12, &result);
+//  printf("\n");
+//
+//  s21_decimal value_13 = {{25, 0, 0, 0}};
+//  s21_decimal value_14 = {{55, 0, 0, 0}};
+//  s21_div(value_13, value_14, &result);
+//  printf("\n");
 
   // s21_decimal value_5 = {{227, 0, 0, 0}};
   // bcd bcd5;

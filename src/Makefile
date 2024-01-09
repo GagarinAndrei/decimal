@@ -1,13 +1,12 @@
 # all, clean, test, s21_decimal.a, gcov_report
-GCC=gcc
+GCC=gcc -g
 CFALGS=-Wall -Werror -Wextra -std=c11
-SOURCES=*.c
+SOURCES=temp.c s21_utils.c
 TESTS_SOURCES=tests/test.c tests/test_is_equal.c tests/test_is_greater.c tests/test_is_greater_or_equal.c tests/test_is_less.c tests/test_is_less_or_equal.c tests/test_from_decimal_to_int.c tests/test_from_int_to_decimal.c tests/test_is_not_equal.c
 OBJECTS=$(SOURCES:.c=.o)
 
 ifeq ($(shell uname), Linux)
-	CHECKFLAGS=-lcheck -lm -lpthread -lrt
-# -lsubunit
+	CHECKFLAGS=-lcheck -lm -lpthread -lrt -lsubunit
 else
 	CHECKFLAGS=-lcheck -lm -lpthread
 endif

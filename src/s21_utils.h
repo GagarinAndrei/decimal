@@ -33,7 +33,7 @@ void left_bit_shift_bcd(bcd *bcd_number);
 void decimal_to_bcd(s21_decimal *decimal, bcd *bcd_number);
 void bcd_to_decimal(s21_decimal *decimal, bcd *bcd_number);
 
-void normalize_scale(bcd *number_1, bcd *number_2);
+void normalize_scale(s21_decimal *number_1, s21_decimal *number_2);
 
 void full_convert_two_bcd_with_normalize(s21_decimal *value_1,
                                          s21_decimal *value_2,
