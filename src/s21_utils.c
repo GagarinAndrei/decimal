@@ -185,3 +185,7 @@ int digits(int n) {
 
   return 1 + digits(n / 10);
 }
+
+void normalize_scale(s21_decimal *number_1, s21_decimal *number_2) {
+
+}
