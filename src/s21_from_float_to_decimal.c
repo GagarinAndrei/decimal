@@ -1,10 +1,15 @@
-// #include "s21_decimal.h"
-// #define FLOAT_BIT 32
-// #define MAX_DECIMAL powl(2.0, 96)
-// #define MIN_DECIMAL (-1 * MAX_DECIMAL)
-// #define MAX_POW 28
-// #define FLOAT_ACCURACY 7
-// #define MANTISSA_END 96
+#include "s21_decimal.h"
+#include "s21_utils.h"
+#include <math.h>
+#include <stdio.h>
+#include <stdint.h>
+
+#define FLOAT_BIT 32
+#define MAX_DECIMAL powl(2.0, 96)
+#define MIN_DECIMAL (-1 * MAX_DECIMAL)
+#define MAX_POW 28
+#define FLOAT_ACCURACY 7 // 7 значимых цифр по условию задачи
+#define MANTISSA_END 96 
 
 // // int s21_from_float_to_decimal(float src, s21_decimal *dst) {
 // // // 	Значения с одиночной точностью и типом float имеют 4 байта, 
@@ -112,49 +117,49 @@
 //     printf("\n");
 // }
 
-// /**
-//  * Получение мантиссы из строчного представления типа float в научной нотации
-//  * @param str Указатель на строку
-//  * @return мантисса
-//  * 
-// */
-// // int get_mantissa_from_string(char *str) {
-// //     int result = 0;
-// //     char *ptr = str;
-// //     result = strtol(ptr, NULL, 10);
-// //     while (*ptr && *ptr != '.') {
-// //         ptr++;
-// //         if (*ptr == 'E') {
-// //             ++ptr;
-// //             break;
-// //         }
-// //     }
-// //     ptr++;
-// //             result = result * (pow(10, FLOAT_ACCURACY)) + strtol(ptr, NULL, 10);
+/**
+ * Получение мантиссы из строчного представления типа float в научной нотации
+ * @param str Указатель на строку
+ * @return мантисса
+ * 
+*/
+int get_mantissa_from_string(char *str) {
+    int result = 0;
+    char *ptr = str;
+    result = strtol(ptr, NULL, 10);
+    while (*ptr && *ptr != '.') {
+        ptr++;
+        if (*ptr == 'E') {
+            ++ptr;
+            break;
+        }
+    }
+    ptr++;
+	result = result * (pow(10, FLOAT_ACCURACY)) + strtol(ptr, NULL, 10);
 
-// //     return result;
-// // }
+    return result;
+}
 
-// /**
-//  * Получение экспоненты из строчного представления типа float в научной нотации
-//  * @param str Указатель на строку
-//  * @return множитель экспоненты
-//  * 
-// */
-// int get_exponent_from_string(char *str) {
-//     int result = 0;
-//     char *ptr = str;
-//     while (*ptr) {
-//         if (*ptr == 'E') {
-//             ++ptr;
-//             result = strtol(ptr, NULL, 10);
-//             break;
-//         }
-//         ++ptr;
-//     }
+/**
+ * Получение экспоненты из строчного представления типа float в научной нотации
+ * @param str Указатель на строку
+ * @return множитель экспоненты
+ * 
+*/
+int get_exponent_from_string(char *str) {
+    int result = 0;
+    char *ptr = str;
+    while (*ptr) {
+        if (*ptr == 'E') {
+            ++ptr;
+            result = strtol(ptr, NULL, 10);
+            break;
+        }
+        ++ptr;
+    }
 
-//     return result;
-// }
+    return result;
+}
 
 // /**
 //  * Конвертирует float в decimal
@@ -198,14 +203,14 @@
 // //   return return_value;
 // // }
 
-// /**
-//  * Конвертирует float в decimal
-//  * @param src конвертируемый float
-//  * @param dst указатель на decimal, в который запишется результат функции
-//  * @return int код ошибки:
-//  * 0 - OK, 
-//  * 1 - ошибка конвертации
-//  */
+/**
+ * Конвертирует float в decimal
+ * @param src конвертируемый float
+ * @param dst указатель на decimal, в который запишется результат функции
+ * @return int код ошибки:
+ * 0 - OK, 
+ * 1 - ошибка конвертации
+ */
 // int s21_from_float_to_decimal(float src, s21_decimal *dst) {
 //     char float_str[32] = {0};
 
