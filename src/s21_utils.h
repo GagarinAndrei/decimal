@@ -48,5 +48,11 @@ void tmp_result_of_adding(bcd value_1, bcd value_2, bcd *result_in_bcd);
 void tmp_result_of_diff(bcd value_1, bcd value_2, bcd *result_in_bcd);
 void tmp_result_of_mult(bcd value_1_in_bcd, bcd value_2_in_bcd,
                         bcd *result_in_bcd);
+int check_decimal_for_zero(s21_decimal value);
+void copy_decimal(s21_decimal src, s21_decimal *dst);
+s21_decimal abs_decimal(s21_decimal value);
+int is_positive_decimal(s21_decimal value);
+void sub_smaller_from_larger(s21_decimal value_1, s21_decimal value_2, s21_decimal *result);
+void set_minus_to_decimal(s21_decimal *dst);
 
 #endif
