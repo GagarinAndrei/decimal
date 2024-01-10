@@ -9,7 +9,7 @@ int main() {
    s21_decimal value_1 = {{7, 0, 0, 0}};
    s21_decimal value_2 = {{7, 0, 0, 0}};
 //  s21_decimal result;
-     normalize_scale(&value_1, &value_2);
+//  normalize_scale(&value_1, &value_2);
 //  s21_div(value_1, value_2, &result);
   printf("\n");
 

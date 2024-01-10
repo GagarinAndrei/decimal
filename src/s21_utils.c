@@ -3,6 +3,7 @@
 #include "s21_decimal.h"
 #include <stdint.h>
 
+
 /**
  * Получить значение нужного бита s21_decimal
  * @param value Проверяемый decimal
@@ -79,32 +80,14 @@ void print_bits_decimal(s21_decimal number) {
  * 0 - не равен
 */
 int check_decimal_for_zero(s21_decimal value) {
-  int result = 0;
-  for(int i = 0; i < BYTES_IN_DECIMAL; i++) {
-    if(value.bits[i] == 0) {
-      result = 1;
+  int result = 1;
+  for(int i = 0; i < BYTES_IN_DECIMAL - 1; i++) {
+    if(value.bits[i] != 0) {
+      result = 0;
     }
   }
 
   return result;
-}
-
-void normalize_scale(s21_decimal *number_1, s21_decimal *number_2) {
-  int32_t max_scale =
-      (number_1->scale > number_2->scale) ? number_1->scale : number_2->scale;
-  int32_t min_scale =
-      (number_1->scale < number_2->scale) ? number_1->scale : number_2->scale;
-  int is_min_scale = (max_scale > number_1->scale) ? 1 : 0;
-
-  for (int i = min_scale; i < max_scale; i++) {
-    if (is_min_scale) {
-      number_1->scale++;
-      for (int i = 0; i < 4; ++i) left_bit_shift_decimal(number_1);
-    } else {
-      number_2->scale++;
-      for (int i = 0; i < 4; ++i) left_bit_shift_decimal(number_2);
-    }
-  }
 }
 
 /**
@@ -116,3 +99,71 @@ void reset_decimal(s21_decimal *value) {
     value->bits[i] = 0;
   }
 }
+ 
+void copy_decimal(s21_decimal src, s21_decimal *dst){
+  reset_decimal(dst);
+  for (int index = 0; index < BYTES_IN_DECIMAL; index++) {
+      for (int bit = 0; bit < INT_BIT; bit++) {
+          if(get_bit(src,bit + (index * INT_BIT)))
+            set_bit(dst, bit + (index * INT_BIT));
+               }
+  }
+}
+s21_decimal abs_decimal(s21_decimal value){
+  s21_decimal result;
+copy_decimal(value,&result);
+  result.bits[3] &= ~MINUS;
+  return result;
+}
+/**
+ * проверяет s21_decimal на положительность
+ * @param value первое значение
+ * @return 0 - если число отрицательное, 1 - если число положительное.
+ */
+int is_positive_decimal(s21_decimal value) {
+  return (value.bits[3] & MINUS) ? 0 : 1;
+}
+
+void sub_smaller_from_larger(s21_decimal value_1, s21_decimal value_2, s21_decimal *result){
+  s21_decimal smaller,larger;
+  if(s21_is_greater(value_1,value_2)){
+    copy_decimal(value_1, &larger);
+    copy_decimal(value_2, &smaller);
+  } else {
+    copy_decimal(value_2, &larger);
+    copy_decimal(value_1, &smaller);
+  } 
+
+  int one_to_mind = 0;
+    for (int index = 0; index < BYTES_IN_DECIMAL - 1; index++) {
+      for (int bit = 0; bit < INT_BIT; bit++) {
+        if (get_bit(larger, bit + (index * INT_BIT)) -
+                get_bit(smaller, bit + (index * INT_BIT)) - one_to_mind ==
+            0) {
+          one_to_mind = 0;
+          continue;
+        }
+        if (get_bit(larger, bit + (index * INT_BIT)) -
+                get_bit(smaller, bit + (index * INT_BIT)) - one_to_mind ==
+            1) {
+          set_bit(result, bit + (index * INT_BIT));
+          one_to_mind = 0;
+        }
+        if (get_bit(larger, bit + (index * INT_BIT)) -
+                get_bit(smaller, bit + (index * INT_BIT)) - one_to_mind ==
+            -1) {
+          one_to_mind = 1;
+          set_bit(result, bit + (index * INT_BIT));
+        }
+        if (get_bit(larger, bit + (index * INT_BIT)) -
+                get_bit(smaller, bit + (index * INT_BIT)) - one_to_mind ==
+            -2) {
+          one_to_mind = 1;
+        }
+      }
+    }
+  }
+  
+  void set_minus_to_decimal(s21_decimal *dst) {
+    dst->bits[3] |= MINUS;
+  }
