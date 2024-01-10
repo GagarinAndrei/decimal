@@ -5,13 +5,13 @@
 
 // 79,228,162,514,264,337,593,543,950,335
 
-int main() {
-   s21_decimal value_1 = {{7, 0, 0, 0}};
-   s21_decimal value_2 = {{7, 0, 0, 0}};
-//  s21_decimal result;
-//  normalize_scale(&value_1, &value_2);
-//  s21_div(value_1, value_2, &result);
-  printf("\n");
+// int main() {
+//    s21_decimal value_1 = {{7, 0, 0, 0}};
+//    s21_decimal value_2 = {{7, 0, 0, 0}};
+// //  s21_decimal result;
+// //  normalize_scale(&value_1, &value_2);
+// //  s21_div(value_1, value_2, &result);
+//   printf("\n");
 
 //  s21_decimal value_3 = {{21, 0, 0, 0}};
 //  s21_decimal value_4 = {{3, 0, 0, 0}};
@@ -61,5 +61,5 @@ int main() {
   // printf("\n");
   // s21_sub(value_1, value_2, &result);
 
-  return 0;
-}
+//   return 0;
+// }

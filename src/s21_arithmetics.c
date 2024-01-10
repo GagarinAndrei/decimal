@@ -51,7 +51,6 @@ int s21_add(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
 
 int s21_sub(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
   reset_decimal(result);
-  int b = 0;
 
   if(is_positive_decimal(value_1) == is_positive_decimal(value_2)){
     sub_smaller_from_larger(abs_decimal(value_1), abs_decimal(value_2) , result);

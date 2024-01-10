@@ -45,8 +45,7 @@ int s21_is_less(s21_decimal value_1, s21_decimal value_2) {
   }
   if (is_positive_decimal(value_1) && !is_positive_decimal(value_2)) flag = 0;
   if (!is_positive_decimal(value_1) && is_positive_decimal(value_2)) flag = 1;
-   if (!is_positive_decimal(value_1) && !is_positive_decimal(value_2))
-    flag = !flag;
+  if (!is_positive_decimal(value_1) && !is_positive_decimal(value_2)) flag = !flag;
   return flag;
 }
 

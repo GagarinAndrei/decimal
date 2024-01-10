@@ -13,7 +13,7 @@ void unset_bit(s21_decimal *value, int bit);
 void print_bits(int n);
 void print_bits_decimal(s21_decimal number);
 
-void left_bit_shift_decimal(s21_decimal *decimal);
+int left_bit_shift_decimal(s21_decimal *decimal);
 
 void normalize_scale(s21_decimal *number_1, s21_decimal *number_2);
 
