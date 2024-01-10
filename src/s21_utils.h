@@ -25,5 +25,6 @@ s21_decimal abs_decimal(s21_decimal value);
 int is_positive_decimal(s21_decimal value);
 void sub_smaller_from_larger(s21_decimal value_1, s21_decimal value_2, s21_decimal *result);
 void set_minus_to_decimal(s21_decimal *dst);
+int digits(int n);
 
 #endif

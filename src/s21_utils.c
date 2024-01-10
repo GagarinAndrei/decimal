@@ -44,7 +44,16 @@ void unset_bit(s21_decimal *value, int bit) {
   value->bits[index] &= mask;
 }
 
-void left_bit_shift_decimal(s21_decimal *decimal) {
+/**
+ * Сдвиг влево всех битов мантиссы структуры s21_decimal на одну позицию
+ * @param decimal указатель на структуру s21_decimal
+ * @return 0 - ошибка переноса;
+ * 1 - success
+*/
+int left_bit_shift_decimal(s21_decimal *decimal) {
+  if(get_bit(*decimal, 95)) {
+    return 0;
+  }
   for (int i = BYTES_IN_DECIMAL - 1; i >= 0; i--) {
     decimal->bits[i] <<= 1;
     if (i > 0) {
@@ -54,7 +63,9 @@ void left_bit_shift_decimal(s21_decimal *decimal) {
       }
     }
   }
+  return 1;
 }
+
 
 void print_bits(int n) {
   int i;
@@ -167,3 +178,10 @@ void sub_smaller_from_larger(s21_decimal value_1, s21_decimal value_2, s21_decim
   void set_minus_to_decimal(s21_decimal *dst) {
     dst->bits[3] |= MINUS;
   }
+
+int digits(int n) {
+  if(n < 0) n *= -1;
+  if (n < 10) return 1;
+
+  return 1 + digits(n / 10);
+}
