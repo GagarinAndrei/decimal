@@ -1,16 +1,14 @@
 #include "s21_utils.h"
 
 #include "s21_decimal.h"
-#include <stdint.h>
-
 
 /**
  * Получить значение нужного бита s21_decimal
  * @param value Проверяемый decimal
  * @param bit Проверяемый бит (0 - 127)
  * @return  Значение бита ( 0 | 1 )
- * 
-*/
+ *
+ */
 int get_bit(s21_decimal value, int bit) {
   int result;
   int index = bit / 32;
@@ -24,8 +22,8 @@ int get_bit(s21_decimal value, int bit) {
  * Установить значение в 1 нужного бита s21_decimal
  * @param value Проверяемый decimal
  * @param bit Проверяемый бит (0 - 127)
- * 
-*/
+ *
+ */
 void set_bit(s21_decimal *value, int bit) {
   int index = bit / 32;
   unsigned int mask = 1 << (bit % 32);
@@ -36,8 +34,8 @@ void set_bit(s21_decimal *value, int bit) {
  * Установить значение в 0 нужного бита s21_decimal
  * @param value Проверяемый decimal
  * @param bit Проверяемый бит (0 - 127)
- * 
-*/
+ *
+ */
 void unset_bit(s21_decimal *value, int bit) {
   int index = bit / 32;
   unsigned int mask = ~(1 << (bit % 32));
@@ -49,9 +47,9 @@ void unset_bit(s21_decimal *value, int bit) {
  * @param decimal указатель на структуру s21_decimal
  * @return 0 - ошибка переноса;
  * 1 - success
-*/
+ */
 int left_bit_shift_decimal(s21_decimal *decimal) {
-  if(get_bit(*decimal, 95)) {
+  if (get_bit(*decimal, 95)) {
     return 0;
   }
   for (int i = BYTES_IN_DECIMAL - 1; i >= 0; i--) {
@@ -65,7 +63,6 @@ int left_bit_shift_decimal(s21_decimal *decimal) {
   }
   return 1;
 }
-
 
 void print_bits(int n) {
   int i;
@@ -89,11 +86,11 @@ void print_bits_decimal(s21_decimal number) {
  * @param value проверяемый элемент
  * @return 1 - равен 0,
  * 0 - не равен
-*/
+ */
 int check_decimal_for_zero(s21_decimal value) {
   int result = 1;
-  for(int i = 0; i < BYTES_IN_DECIMAL - 1; i++) {
-    if(value.bits[i] != 0) {
+  for (int i = 0; i < BYTES_IN_DECIMAL - 1; i++) {
+    if (value.bits[i] != 0) {
       result = 0;
     }
   }
@@ -104,25 +101,25 @@ int check_decimal_for_zero(s21_decimal value) {
 /**
  * Обнуление s21_decimal
  * @param value адрес на нужный элемент
-*/
+ */
 void reset_decimal(s21_decimal *value) {
-  for(int i = 0; i < BYTES_IN_DECIMAL; i++) {
+  for (int i = 0; i < BYTES_IN_DECIMAL; i++) {
     value->bits[i] = 0;
   }
 }
- 
-void copy_decimal(s21_decimal src, s21_decimal *dst){
+
+void copy_decimal(s21_decimal src, s21_decimal *dst) {
   reset_decimal(dst);
   for (int index = 0; index < BYTES_IN_DECIMAL; index++) {
-      for (int bit = 0; bit < INT_BIT; bit++) {
-          if(get_bit(src,bit + (index * INT_BIT)))
-            set_bit(dst, bit + (index * INT_BIT));
-               }
+    for (int bit = 0; bit < INT_BIT; bit++) {
+      if (get_bit(src, bit + (index * INT_BIT)))
+        set_bit(dst, bit + (index * INT_BIT));
+    }
   }
 }
-s21_decimal abs_decimal(s21_decimal value){
+s21_decimal abs_decimal(s21_decimal value) {
   s21_decimal result;
-copy_decimal(value,&result);
+  copy_decimal(value, &result);
   result.bits[3] &= ~MINUS;
   return result;
 }
@@ -135,57 +132,56 @@ int is_positive_decimal(s21_decimal value) {
   return (value.bits[3] & MINUS) ? 0 : 1;
 }
 
-void sub_smaller_from_larger(s21_decimal value_1, s21_decimal value_2, s21_decimal *result){
-  s21_decimal smaller,larger;
-  if(s21_is_greater(value_1,value_2)){
+void sub_smaller_from_larger(s21_decimal value_1, s21_decimal value_2,
+                             s21_decimal *result) {
+  s21_decimal smaller, larger;
+  if (s21_is_greater(value_1, value_2)) {
     copy_decimal(value_1, &larger);
     copy_decimal(value_2, &smaller);
   } else {
     copy_decimal(value_2, &larger);
     copy_decimal(value_1, &smaller);
-  } 
+  }
 
   int one_to_mind = 0;
-    for (int index = 0; index < BYTES_IN_DECIMAL - 1; index++) {
-      for (int bit = 0; bit < INT_BIT; bit++) {
-        if (get_bit(larger, bit + (index * INT_BIT)) -
-                get_bit(smaller, bit + (index * INT_BIT)) - one_to_mind ==
-            0) {
-          one_to_mind = 0;
-          continue;
-        }
-        if (get_bit(larger, bit + (index * INT_BIT)) -
-                get_bit(smaller, bit + (index * INT_BIT)) - one_to_mind ==
-            1) {
-          set_bit(result, bit + (index * INT_BIT));
-          one_to_mind = 0;
-        }
-        if (get_bit(larger, bit + (index * INT_BIT)) -
-                get_bit(smaller, bit + (index * INT_BIT)) - one_to_mind ==
-            -1) {
-          one_to_mind = 1;
-          set_bit(result, bit + (index * INT_BIT));
-        }
-        if (get_bit(larger, bit + (index * INT_BIT)) -
-                get_bit(smaller, bit + (index * INT_BIT)) - one_to_mind ==
-            -2) {
-          one_to_mind = 1;
-        }
+  for (int index = 0; index < BYTES_IN_DECIMAL - 1; index++) {
+    for (int bit = 0; bit < INT_BIT; bit++) {
+      if (get_bit(larger, bit + (index * INT_BIT)) -
+              get_bit(smaller, bit + (index * INT_BIT)) - one_to_mind ==
+          0) {
+        one_to_mind = 0;
+        continue;
+      }
+      if (get_bit(larger, bit + (index * INT_BIT)) -
+              get_bit(smaller, bit + (index * INT_BIT)) - one_to_mind ==
+          1) {
+        set_bit(result, bit + (index * INT_BIT));
+        one_to_mind = 0;
+      }
+      if (get_bit(larger, bit + (index * INT_BIT)) -
+              get_bit(smaller, bit + (index * INT_BIT)) - one_to_mind ==
+          -1) {
+        one_to_mind = 1;
+        set_bit(result, bit + (index * INT_BIT));
+      }
+      if (get_bit(larger, bit + (index * INT_BIT)) -
+              get_bit(smaller, bit + (index * INT_BIT)) - one_to_mind ==
+          -2) {
+        one_to_mind = 1;
       }
     }
   }
-  
-  void set_minus_to_decimal(s21_decimal *dst) {
-    dst->bits[3] |= MINUS;
-  }
+}
+
+void set_minus_to_decimal(s21_decimal *dst) { dst->bits[3] |= MINUS; }
 
 int digits(int n) {
-  if(n < 0) n *= -1;
-  if (n < 10) return 1;
+  if (n < 0)
+    n *= -1;
+  if (n < 10)
+    return 1;
 
   return 1 + digits(n / 10);
 }
 
-void normalize_scale(s21_decimal *number_1, s21_decimal *number_2) {
-
-}
+void normalize_scale(s21_decimal *number_1, s21_decimal *number_2) {}
