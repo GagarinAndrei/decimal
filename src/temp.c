@@ -9,6 +9,7 @@ int main() {
   s21_decimal value_1 = {{1, 0, 0, 0}};
   s21_decimal value_2 = {{100, 0, 0, 0x00020000}};
   normalize_scale(&value_1, &value_2);
+  // mult_decimal_to_ten(&value_1);
   // mul_decimal_to_ten(&value_1);
   // mul_decimal_to_ten(&value_2);
   // div_decimal_to_ten(&value_1);
