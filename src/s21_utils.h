@@ -16,8 +16,10 @@ void print_bits_decimal(s21_decimal number);
 
 int left_bit_shift_decimal(s21_decimal *decimal);
 int left_bit_shift_N_decimal(s21_decimal *decimal, int n);
+void right_bit_shift_decimal(s21_decimal *decimal);
+void right_bit_shift_N_decimal(s21_decimal *decimal, int n);
 
-void normalize_scale(s21_decimal *number_1, s21_decimal *number_2);
+int normalize_scale(s21_decimal *number_1, s21_decimal *number_2);
 
 void reset_decimal(s21_decimal *value);
 
@@ -25,11 +27,12 @@ int check_decimal_for_zero(s21_decimal value);
 void copy_decimal(s21_decimal src, s21_decimal *dst);
 s21_decimal abs_decimal(s21_decimal value);
 int is_positive_decimal(s21_decimal value);
-void sub_smaller_from_larger(s21_decimal value_1, s21_decimal value_2, s21_decimal *result);
+void sub_smaller_from_larger(s21_decimal value_1, s21_decimal value_2,
+                             s21_decimal *result);
 void set_minus_to_decimal(s21_decimal *dst);
 int digits(int n);
 int get_scale(s21_decimal value);
 void set_scale(s21_decimal *dst, int scale);
-int mul_decimal_to_ten(s21_decimal *value);
-
+int mult_decimal_to_ten(s21_decimal *value);
+int mult_decimal_to_ten_n_times(s21_decimal *decimal, int number);
 #endif
