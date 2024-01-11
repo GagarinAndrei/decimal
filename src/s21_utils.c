@@ -64,6 +64,36 @@ int left_bit_shift_decimal(s21_decimal *decimal) {
   return 1;
 }
 
+void right_bit_shift_decimal(s21_decimal *decimal) {
+  for (int i = 0; i < BYTES_IN_DECIMAL - 1; i++) {
+    decimal->bits[i] >>= 1;
+    if (i < BYTES_IN_DECIMAL - 1) {
+      int lowest_bit_in_left_int = (i + 1) * INT_BIT;
+      if (get_bit(*decimal, lowest_bit_in_left_int)) {
+        set_bit(decimal, lowest_bit_in_left_int - 1);
+      }
+    }
+  }
+}
+
+int left_bit_shift_N_decimal(s21_decimal *decimal, int n) {
+  int code = 1;
+  for (int i = 0; i < n; i++) {
+    code = left_bit_shift_decimal(decimal);
+    if (0 == code) {
+      break;
+    }
+  }
+
+  return code;
+}
+
+void right_bit_shift_N_decimal(s21_decimal *decimal, int n) {
+  for (int i = 0; i < n; i++) {
+    right_bit_shift_decimal(decimal);
+  }
+}
+
 void print_bits(int n) {
   int i;
   for (i = INT_BIT - 1; i >= 0; i--) {
@@ -184,4 +214,63 @@ int digits(int n) {
   return 1 + digits(n / 10);
 }
 
-void normalize_scale(s21_decimal *number_1, s21_decimal *number_2) {}
+int normalize_scale(s21_decimal *number_1, s21_decimal *number_2) {
+  s21_decimal ten;
+  int scale_1, scale_2;
+  int dif_scale;
+  int error_code = 0;
+  scale_1 = get_scale(*number_1);
+  scale_2 = get_scale(*number_2);
+
+  if (scale_1 <= MAX_SCALE && scale_2 <= MAX_SCALE) {
+    dif_scale = abs(scale_1 - scale_2);
+    s21_from_int_to_decimal(pow(10, dif_scale), &ten);
+    if (scale_1 < scale_2) {
+      scale_1 += dif_scale;
+      error_code = mult_decimal_to_ten_n_times(number_1, dif_scale);
+      set_scale(number_1, scale_1);
+    } else {
+      scale_2 += dif_scale;
+      error_code = mult_decimal_to_ten_n_times(number_2, dif_scale);
+      set_scale(number_2, scale_2);
+    }
+  }
+  return error_code;
+}
+
+int get_scale(s21_decimal value) { return (value.bits[3] & SCALE) >> 16; }
+
+void set_scale(s21_decimal *dst, int scale) {
+  dst->bits[3] &= ~SCALE;
+  dst->bits[3] |= (SCALE & (scale << 16));
+}
+
+int mult_decimal_to_ten(s21_decimal *value) {
+  int error_code = 0;
+  s21_decimal tmp_eight, tmp_two;
+  copy_decimal(*value, &tmp_eight);
+  copy_decimal(*value, &tmp_two);
+  if (!left_bit_shift_N_decimal(&tmp_eight, 3)) {
+    error_code = 1;
+  }
+  if (!left_bit_shift_decimal(&tmp_two)) {
+    error_code = 1;
+  }
+  if (error_code) {
+    if (0 != s21_add(tmp_eight, tmp_two, value)) {
+      error_code = 1;
+    }
+  }
+
+  return error_code;
+}
+
+int mult_decimal_to_ten_n_times(s21_decimal *decimal, int number) {
+  int error_code = 0;
+  for (int i = 0; i < number; i++) {
+    error_code = mult_decimal_to_ten(decimal);
+    if (1 == error_code)
+      break;
+  }
+  return error_code;
+}
