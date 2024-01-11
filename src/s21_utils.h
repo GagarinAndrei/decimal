@@ -15,6 +15,7 @@ void print_bits(int n);
 void print_bits_decimal(s21_decimal number);
 
 int left_bit_shift_decimal(s21_decimal *decimal);
+int left_bit_shift_N_decimal(s21_decimal *decimal, int n);
 
 void normalize_scale(s21_decimal *number_1, s21_decimal *number_2);
 
@@ -30,4 +31,5 @@ int digits(int n);
 int get_scale(s21_decimal value);
 void set_scale(s21_decimal *dst, int scale);
 int mul_decimal_to_ten(s21_decimal *value);
+
 #endif
