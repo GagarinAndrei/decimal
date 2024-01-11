@@ -3,6 +3,15 @@
 #include "s21_decimal.h"
 #include "s21_utils.h"
 
+/**
+ * Сложение двух s21_decimal
+ * @param value_1 1ое число
+ * @param value_2 2ое число
+ * @param result результат сложения
+ * @result 0 - OK,
+ * 1 - число слишком велико или равно бесконечности,
+ * 2 - число слишком мало или равно отрицательной бесконечности
+*/
 int s21_add(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
   reset_decimal(result);
 

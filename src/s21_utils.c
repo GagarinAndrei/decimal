@@ -3,7 +3,6 @@
 #include "s21_decimal.h"
 #include <stdint.h>
 
-
 /**
  * Получить значение нужного бита s21_decimal
  * @param value Проверяемый decimal
@@ -66,6 +65,17 @@ int left_bit_shift_decimal(s21_decimal *decimal) {
   return 1;
 }
 
+int left_bit_shift_N_decimal(s21_decimal *decimal, int n) {
+  int code = 1;
+  for(int i = 0; i < n; i++) {
+    code = left_bit_shift_decimal(decimal);
+    if(code == 0) {
+      break;
+    }
+  }
+
+  return code;
+}
 
 void print_bits(int n) {
   int i;
@@ -187,5 +197,59 @@ int digits(int n) {
 }
 
 void normalize_scale(s21_decimal *number_1, s21_decimal *number_2) {
+  s21_decimal ten;
+  int scale_1,scale_2;
+  int dif_scale;
+  scale_1 = get_scale(*number_1);  
+  scale_2 = get_scale(*number_2);  
+  
+  if(scale_1 <= MAX_SCALE && scale_2 <= MAX_SCALE) {
+    dif_scale = abs(scale_1 - scale_2);
+    s21_from_int_to_decimal(pow(10,dif_scale), &ten);
+    if(scale_1<scale_2){
+      scale_1 += dif_scale;
+      // s21_mul(*number_1, ten, number_1);
+      set_scale(number_1, scale_1);
+    } else {
+      scale_2 += dif_scale;
+      // s21_mul(*number_2, ten, number_2);
+      set_scale(number_2, scale_2);
+    } 
+  } 
+  // else if () {
+  //   set_scale(number_1, MAX_SCALE);
+  //   set_scale(number_2, MAX_SCALE);
+    
+  // }
+}
 
+int get_scale(s21_decimal value) {
+  return (value.bits[3] & SCALE) >> 16;
+}
+
+void set_scale(s21_decimal *dst, int scale) {
+  dst->bits[3] &= ~SCALE;
+  dst->bits[3] |= (SCALE & (scale << 16));
+
+}
+
+int mul_decimal_to_ten(s21_decimal *value){
+  int code = 1;
+  s21_decimal tmp_eight, tmp_two;
+  copy_decimal(*value, &tmp_eight);
+  copy_decimal(*value, &tmp_two);
+  if(!left_bit_shift_N_decimal(&tmp_eight, 3)) {
+    code = 0;
+  }
+  if(!left_bit_shift_decimal(&tmp_two)) {
+    code = 0;
+  }
+  if(code) {
+    if(0 != s21_add(tmp_eight, tmp_two, value)) {
+      code = 0;
+      printf("add\n");
+    }
+  }
+  
+  return code;
 }
