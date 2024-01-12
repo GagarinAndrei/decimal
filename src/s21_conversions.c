@@ -36,10 +36,10 @@ int s21_from_float_to_decimal(float src, s21_decimal *dst) {
     reset_decimal(dst);
 
     int digits_counter = FLOAT_ACCURACY - (digits(intValue));
-    // if(0 > digits_counter) {
-    //   intValue /= pow(10, digits_counter * -1);
-    //   intValue *= pow(10, digits_counter * -1);
-    // }
+    if(0 > digits_counter) {
+      intValue /= pow(10, digits_counter * -1);
+      intValue *= pow(10, digits_counter * -1);
+    }
     while (fraction != 0.0f && (fraction - (int)fraction) != 0.0f && exponent < digits_counter) {
         fraction *= 10.0f; 
         exponent++; 
