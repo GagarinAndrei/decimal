@@ -57,7 +57,15 @@ int s21_add(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
 
   return 0;
 }
-
+/**
+ * вычитание s21_decimal из s21_decimal
+ * @param value_1 1ое число
+ * @param value_2 2ое число
+ * @param result результат сложения
+ * @result 0 - OK,
+ * 1 - число слишком велико или равно бесконечности,
+ * 2 - число слишком мало или равно отрицательной бесконечности
+*/
 int s21_sub(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
   reset_decimal(result);
 
@@ -75,9 +83,6 @@ int s21_sub(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
     s21_add(abs_decimal(value_1), abs_decimal(value_2),result);
     set_minus_to_decimal(result);
   }
-
-
-
   return 0;
 }
 
@@ -92,6 +97,7 @@ int s21_sub(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
  * 2 - число слишком мало или равно отрицательной бесконечности
 */
 int s21_mul(s21_decimal value_1, s21_decimal value_2, s21_decimal *result){
+  normalize_scale(&value_1,&value_2);
   s21_decimal tmp_value;
   reset_decimal(result);
   for(int i=0; i<INT_BIT * (BYTES_IN_DECIMAL-1); i++){

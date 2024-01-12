@@ -246,19 +246,19 @@ void set_scale(s21_decimal *dst, int scale) {
 }
 
 int mult_decimal_to_ten(s21_decimal *value) {
-  int error_code = 0;
+  int error_code = 1;
   s21_decimal tmp_eight, tmp_two;
   copy_decimal(*value, &tmp_eight);
   copy_decimal(*value, &tmp_two);
   if (!left_bit_shift_N_decimal(&tmp_eight, 3)) {
-    error_code = 1;
+    error_code = 0;
   }
   if (!left_bit_shift_decimal(&tmp_two)) {
-    error_code = 1;
+    error_code = 0;
   }
   if (error_code) {
     if (0 != s21_add(tmp_eight, tmp_two, value)) {
-      error_code = 1;
+      error_code = 0;
     }
   }
 
@@ -266,10 +266,11 @@ int mult_decimal_to_ten(s21_decimal *value) {
 }
 
 int mult_decimal_to_ten_n_times(s21_decimal *decimal, int number) {
-  int error_code = 0;
+
+  int error_code = 1;
   for (int i = 0; i < number; i++) {
     error_code = mult_decimal_to_ten(decimal);
-    if (1 == error_code)
+    if (0 == error_code)
       break;
   }
   return error_code;
