@@ -12,7 +12,7 @@
 */
 int s21_add(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
   reset_decimal(result);
-
+  normalize_scale(&value_1, &value_2);
   if (is_positive_decimal(value_1) == is_positive_decimal(value_2)) {
     int one_to_mind = 0;
     for (int index = 0; index < BYTES_IN_DECIMAL; index++) {
@@ -58,7 +58,7 @@ int s21_add(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
 
 int s21_sub(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
   reset_decimal(result);
-
+  normalize_scale(&value_1, &value_2);
   if(is_positive_decimal(value_1) == is_positive_decimal(value_2)){
     sub_smaller_from_larger(abs_decimal(value_1), abs_decimal(value_2) , result);
     if(s21_is_greater(abs_decimal(value_1), abs_decimal(value_2))) {
@@ -89,6 +89,7 @@ int s21_sub(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
 */
 int s21_mul(s21_decimal value_1, s21_decimal value_2, s21_decimal *result){
   s21_decimal tmp_value;
+  normalize_scale(&value_1, &value_2);
   reset_decimal(result);
   for(int i=0; i<INT_BIT * (BYTES_IN_DECIMAL-1); i++){
        if(get_bit(value_1,i)){
