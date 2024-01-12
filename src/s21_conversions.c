@@ -3,9 +3,6 @@
 
 #define FLOAT_ACCURACY 7 // 7 значимых цифр по условию задачи
 
-// int s21_from_float_to_decimal(float src, s21_decimal *dst);
-// int s21_from_decimal_to_float(s21_decimal src, float *dst);
-
 int s21_from_int_to_decimal(int src, s21_decimal *dst) {
   if (isnan((float)src) || isinf((float)src) || !dst) return 1;
   if (src < 0) set_bit(dst, 127);
