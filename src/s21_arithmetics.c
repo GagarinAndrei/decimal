@@ -17,7 +17,7 @@ int s21_add(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
 
   if (is_positive_decimal(value_1) == is_positive_decimal(value_2)) {
     int one_to_mind = 0;
-    for (int index = 0; index < BYTES_IN_DECIMAL - 1; index++) {
+    for (int index = 0; index < BYTES_IN_DECIMAL; index++) {
       for (int bit = 0; bit < INT_BIT; bit++) {
         if (get_bit(value_1, bit + (index * INT_BIT)) +
                 get_bit(value_2, bit + (index * INT_BIT)) + one_to_mind ==
