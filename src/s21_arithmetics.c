@@ -1,5 +1,3 @@
-#include <stdio.h>
-
 #include "s21_decimal.h"
 #include "s21_utils.h"
 
@@ -76,7 +74,31 @@ int s21_sub(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
     set_minus_to_decimal(result);
   }
 
-
-
   return 0;
 }
+
+
+/**
+ * Умножение двух s21_decimal
+ * @param value_1 1ое число
+ * @param value_2 2ое число
+ * @param result результат умножения
+ * @result 0 - OK,
+ * 1 - число слишком велико или равно бесконечности,
+ * 2 - число слишком мало или равно отрицательной бесконечности
+*/
+int s21_mul(s21_decimal value_1, s21_decimal value_2, s21_decimal *result){
+  s21_decimal tmp_value;
+  reset_decimal(result);
+  for(int i=0; i<INT_BIT * (BYTES_IN_DECIMAL-1); i++){
+       if(get_bit(value_1,i)){
+           copy_decimal(value_2,&tmp_value); 
+           left_bit_shift_N_decimal(&tmp_value,i);
+           s21_add(*result,tmp_value,result);
+       }
+      }
+      if(is_positive_decimal(value_1) != is_positive_decimal(value_2)){
+        set_minus_to_decimal(result);
+      }
+      return 0;
+  }

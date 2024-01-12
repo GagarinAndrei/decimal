@@ -1,9 +1,9 @@
-#include <stdio.h>
+// #include <stdio.h>
 
 #include "s21_decimal.h"
 #include "s21_utils.h"
 
-// 79,228,162,514,264,337,593,543,950,335
+// // 79,228,162,514,264,337,593,543,950,335
 
 int main() {
   s21_decimal value_1 = {{1, 0, 0, 0}};
