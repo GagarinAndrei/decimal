@@ -88,6 +88,7 @@ int s21_sub(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
     s21_add(abs_decimal(value_1), abs_decimal(value_2), result);
     set_minus_to_decimal(result);
   }
+  
   if (get_bit(*result, 96)) {
     return is_positive_decimal(*result) ? 1 : 2;
   }

@@ -9,6 +9,7 @@
  */
 int s21_is_greater(s21_decimal value_1, s21_decimal value_2) {
   int flag = 1;
+  normalize_scale(&value_1, &value_2);
   if (is_positive_decimal(value_1) == is_positive_decimal(value_2)) {
     for (int bit = 95; bit >= 0 && flag == 1; bit--) {
       if (get_bit(value_1, bit) < get_bit(value_2, bit)) {

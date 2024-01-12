@@ -214,28 +214,49 @@ int digits(int n) {
   return 1 + digits(n / 10);
 }
 
-int normalize_scale(s21_decimal *number_1, s21_decimal *number_2) {
-  s21_decimal ten;
+void normalize_scale(s21_decimal *value_1, s21_decimal *value_2) {
   int scale_1, scale_2;
-  int dif_scale;
-  int error_code = 0;
-  scale_1 = get_scale(*number_1);
-  scale_2 = get_scale(*number_2);
+  scale_1 = get_scale(*value_1);
+  scale_2 = get_scale(*value_2);
+  if (scale_1 > scale_2) normalize_mantissa(value_1, value_2);
+  else if (scale_2 > scale_1) normalize_mantissa(value_2, value_1);
 
-  if (scale_1 <= MAX_SCALE && scale_2 <= MAX_SCALE) {
-    dif_scale = abs(scale_1 - scale_2);
-    s21_from_int_to_decimal(pow(10, dif_scale), &ten);
-    if (scale_1 < scale_2) {
-      scale_1 += dif_scale;
-      error_code = mult_decimal_to_ten_n_times(number_1, dif_scale);
-      set_scale(number_1, scale_1);
-    } else {
-      scale_2 += dif_scale;
-      error_code = mult_decimal_to_ten_n_times(number_2, dif_scale);
-      set_scale(number_2, scale_2);
+  // if (scale_1 <= MAX_SCALE && scale_2 <= MAX_SCALE ) {
+  //   if (scale_1 < scale_2) {
+  //     scale_1 += dif_scale;
+  //     success_code = mult_decimal_to_ten_n_times(number_1, dif_scale);
+  //     // if (!success_code) {
+  //     //   scale_1 -=dif_scale;
+  //     //   div_decimal_to_ten_n_times(number_1, dif_scale);
+  //     // }
+  //     set_scale(number_1, scale_1);
+  //   } else {
+  //     scale_2 += dif_scale;
+  //     success_code = mult_decimal_to_ten_n_times(number_2, dif_scale);
+  //     set_scale(number_2, scale_2);
+  //   }
+  // }
+  }
+
+void normalize_mantissa(s21_decimal *value_1, s21_decimal *value_2) {
+  int scale_1, scale_2;
+  int is_mantissa_mult = 1;
+  scale_1 = get_scale(*value_1);
+  scale_2 = get_scale(*value_2);
+  if (get_bit(*value_1, 95)) {
+    is_mantissa_mult = 0;
+  }
+  if (is_mantissa_mult) {
+    while (scale_1 != scale_2) {
+      mult_decimal_to_ten(value_1);
+      scale_1++;
+    }
+  } else {
+    while (scale_1 != scale_2) {
+      div_decimal_to_ten(value_2);
+      scale_2--;
     }
   }
-  return error_code;
 }
 
 int get_scale(s21_decimal value) { return (value.bits[3] & SCALE) >> 16; }
@@ -246,23 +267,23 @@ void set_scale(s21_decimal *dst, int scale) {
 }
 
 int mult_decimal_to_ten(s21_decimal *value) {
-  int error_code = 1;
+  int success_code = 1;
   s21_decimal tmp_eight, tmp_two;
   copy_decimal(*value, &tmp_eight);
   copy_decimal(*value, &tmp_two);
   if (!left_bit_shift_N_decimal(&tmp_eight, 3)) {
-    error_code = 0;
+    success_code = 0;
   }
   if (!left_bit_shift_decimal(&tmp_two)) {
-    error_code = 0;
+    success_code = 0;
   }
-  if (error_code) {
+  if (success_code) {
     if (0 != s21_add(tmp_eight, tmp_two, value)) {
-      error_code = 0;
+      success_code = 0;
     }
   }
 
-  return error_code;
+  return success_code;
 }
 
 int mult_decimal_to_ten_n_times(s21_decimal *decimal, int number) {
@@ -273,4 +294,10 @@ int mult_decimal_to_ten_n_times(s21_decimal *decimal, int number) {
       break;
   }
   return error_code;
+}
+
+int div_decimal_to_ten(s21_decimal *value) {
+  int success_code = 1;
+  
+  return success_code;
 }

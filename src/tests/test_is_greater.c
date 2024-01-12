@@ -42,7 +42,7 @@ END_TEST
 
 START_TEST(s21_is_greater_6) {
   s21_decimal value_1 = {{123456, 1, 0xFFFFFFFF, 0}};
-  s21_decimal value_2 = {{123456, 1, 0xFFFFFFFF, 0x10000}};
+  s21_decimal value_2 = {{123456, 1, 0xFFFFFFFF, 0x00010000}};
   int return_value = s21_is_greater(value_1, value_2);
   ck_assert_int_eq(return_value, 1);
 }

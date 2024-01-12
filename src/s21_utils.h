@@ -19,7 +19,8 @@ int left_bit_shift_N_decimal(s21_decimal *decimal, int n);
 void right_bit_shift_decimal(s21_decimal *decimal);
 void right_bit_shift_N_decimal(s21_decimal *decimal, int n);
 
-int normalize_scale(s21_decimal *number_1, s21_decimal *number_2);
+void normalize_scale(s21_decimal *value_1, s21_decimal *value_2);
+void normalize_mantissa(s21_decimal *value_1, s21_decimal *value_2);
 
 void reset_decimal(s21_decimal *value);
 
@@ -34,5 +35,6 @@ int digits(int n);
 int get_scale(s21_decimal value);
 void set_scale(s21_decimal *dst, int scale);
 int mult_decimal_to_ten(s21_decimal *value);
+int div_decimal_to_ten(s21_decimal *value);
 int mult_decimal_to_ten_n_times(s21_decimal *decimal, int number);
 #endif
