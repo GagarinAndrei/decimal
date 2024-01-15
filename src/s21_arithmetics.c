@@ -11,9 +11,9 @@
  * 2 - число слишком мало или равно отрицательной бесконечности
  */
 int s21_add(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
+  int result_code = 0;
   reset_decimal(result);
   normalize_scale(&value_1, &value_2);
-  int result_code = 0;
 
   if (is_positive_decimal(value_1) == is_positive_decimal(value_2)) {
     int one_to_mind = 0;
@@ -44,14 +44,20 @@ int s21_add(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
         }
       }
     }
-    if (!is_positive_decimal(value_1)) { // если оба знака не положительные
+    if (!is_positive_decimal(value_1) &&
+        !is_positive_decimal(value_2)) { // если оба знака не положительные
       set_minus_to_decimal(result);
     }
   }
   if (is_positive_decimal(value_1) != is_positive_decimal(value_2)) {
-    s21_sub(abs_decimal(value_1), abs_decimal(value_2), result);
     if (s21_is_greater(abs_decimal(value_1), abs_decimal(value_2))) {
-      set_minus_to_decimal(result);
+      s21_sub(abs_decimal(value_1), abs_decimal(value_2), result);
+      if (!is_positive_decimal(value_1))
+        set_minus_to_decimal(result);
+    } else {
+      s21_sub(abs_decimal(value_2), abs_decimal(value_1), result);
+      if (!is_positive_decimal(value_2))
+        set_minus_to_decimal(result);
     }
   }
   if (get_scale(value_1))
@@ -80,7 +86,7 @@ int s21_sub(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
     if (s21_is_greater(abs_decimal(value_1), abs_decimal(value_2))) {
       result->bits[3] |= (value_1.bits[3] & MINUS);
     } else {
-      result->bits[3] |= (value_2.bits[3] & ~MINUS);
+      result->bits[3] |= (/*value_2.bits[3] & ~*/ MINUS);
     }
   } else if (is_positive_decimal(value_1) && !is_positive_decimal(value_2)) {
     s21_add(abs_decimal(value_1), abs_decimal(value_2), result);
@@ -88,7 +94,7 @@ int s21_sub(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
     s21_add(abs_decimal(value_1), abs_decimal(value_2), result);
     set_minus_to_decimal(result);
   }
-  
+
   if (get_bit(*result, 96)) {
     return is_positive_decimal(*result) ? 1 : 2;
   }
@@ -106,7 +112,6 @@ int s21_sub(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
  */
 int s21_mul(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
   int error_code = 0;
-  normalize_scale(&value_1, &value_2);
   s21_decimal tmp_value;
   normalize_scale(&value_1, &value_2);
   reset_decimal(result);

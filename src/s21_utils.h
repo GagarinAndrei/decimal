@@ -34,7 +34,9 @@ void set_minus_to_decimal(s21_decimal *dst);
 int digits(int n);
 int get_scale(s21_decimal value);
 void set_scale(s21_decimal *dst, int scale);
-int mult_decimal_to_ten(s21_decimal *value);
-int div_decimal_to_ten(s21_decimal *value);
+// int mult_decimal_to_ten(s21_decimal *value);
+// int div_decimal_to_ten(s21_decimal *value);
+int increase_scale(s21_decimal *value);
 int mult_decimal_to_ten_n_times(s21_decimal *decimal, int number);
+int decrease_scale(s21_decimal *value);
 #endif
