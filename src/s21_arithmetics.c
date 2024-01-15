@@ -79,14 +79,15 @@ int s21_add(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
  * 2 - число слишком мало или равно отрицательной бесконечности
  */
 int s21_sub(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
+  int result_code = 0;
   reset_decimal(result);
   normalize_scale(&value_1, &value_2);
   if (is_positive_decimal(value_1) == is_positive_decimal(value_2)) {
     sub_smaller_from_larger(abs_decimal(value_1), abs_decimal(value_2), result);
     if (s21_is_greater(abs_decimal(value_1), abs_decimal(value_2))) {
       result->bits[3] |= (value_1.bits[3] & MINUS);
-    } else {
-      result->bits[3] |= (/*value_2.bits[3] & ~*/ MINUS);
+    } else if (s21_is_greater(value_2, value_1)) {
+      result->bits[3] |= MINUS;
     }
   } else if (is_positive_decimal(value_1) && !is_positive_decimal(value_2)) {
     s21_add(abs_decimal(value_1), abs_decimal(value_2), result);
@@ -96,9 +97,9 @@ int s21_sub(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
   }
 
   if (get_bit(*result, 96)) {
-    return is_positive_decimal(*result) ? 1 : 2;
+    result_code = is_positive_decimal(*result) ? 1 : 2;
   }
-  return 0;
+  return result_code;
 }
 
 /**
