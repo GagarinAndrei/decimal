@@ -149,6 +149,7 @@ void copy_decimal(s21_decimal src, s21_decimal *dst) {
     }
   }
 }
+
 s21_decimal abs_decimal(s21_decimal value) {
   s21_decimal result;
   copy_decimal(value, &result);
@@ -208,8 +209,10 @@ void sub_smaller_from_larger(s21_decimal value_1, s21_decimal value_2,
 void set_minus_to_decimal(s21_decimal *dst) { dst->bits[3] |= MINUS; }
 
 int digits(int n) {
-  if (n < 0) n *= -1;
-  if (n < 10) return 1;
+  if (n < 0)
+    n *= -1;
+  if (n < 10)
+    return 1;
 
   return 1 + digits(n / 10);
 }
@@ -294,7 +297,8 @@ void set_scale(s21_decimal *dst, int scale) {
 
 int increase_scale(s21_decimal *value) {
   int success_code = 1;
-  if (get_scale(*value) >= MAX_SCALE) return 0;
+  if (get_scale(*value) >= MAX_SCALE)
+    return 0;
   s21_decimal tmp_eight, tmp_two;
   copy_decimal(*value, &tmp_eight);
   copy_decimal(*value, &tmp_two);
@@ -343,7 +347,7 @@ int decrease_scale(s21_decimal *value) {
   if (check_decimal_for_zero(*value) || !get_scale(*value)) {
     return -1;
   }
-  int remainder = 0;  // остаток
+  int remainder = 0; // остаток
   s21_decimal result;
   reset_decimal(&result);
 
@@ -363,4 +367,54 @@ int decrease_scale(s21_decimal *value) {
   set_scale(&result, get_scale(*value) - 1);
   copy_decimal(result, value);
   return remainder;
+}
+
+s21_decimal integer_quotient(s21_decimal dividend, s21_decimal divisor,
+                             s21_decimal *result) {
+  //
+  int exp = 0;
+  s21_decimal power_of_two = {0};
+  //
+  s21_decimal remainder, last_value_of_quotient, remainder_of_division = {0};
+  copy_decimal(divisor, &remainder);
+
+  while (s21_is_greater(dividend, divisor)) {
+    while (s21_is_less_or_equal(remainder, dividend)) {
+      copy_decimal(remainder, &last_value_of_quotient);
+      left_bit_shift_decimal(&remainder);
+    }
+    s21_sub(dividend, last_value_of_quotient, &remainder);
+    s21_from_decimal_to_int(remainder, &exp);
+    printf("EXP = %d\n", exp);
+    //
+    decimal_pow_of_two(exp,&power_of_two);
+    print_bits_decimal(power_of_two);
+    printf("\n");
+    //
+
+    s21_add(power_of_two, *result, result);
+    s21_from_int_to_decimal(1, &power_of_two);
+    copy_decimal(remainder, &dividend);
+    copy_decimal(remainder, &remainder_of_division);
+    copy_decimal(divisor, &remainder);
+  }
+
+  return remainder_of_division;
+}
+
+void decimal_pow_of_two(int pow, s21_decimal *result) {
+  s21_decimal two;
+  s21_from_int_to_decimal(2, &two);
+  if (pow == 0) {
+    s21_from_int_to_decimal(1, result);
+  } else {
+    // for (int i = 1; i < pow; i++) {
+      // printf("SHIFT = %d\n", i);
+      left_bit_shift_N_decimal(&two, pow - 1);
+      // print_bits_decimal(two);
+      // printf("\n");
+    // }
+    copy_decimal(two, result);
+    // result = &two;
+  }
 }

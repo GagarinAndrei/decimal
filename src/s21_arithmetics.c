@@ -141,18 +141,28 @@ int s21_mul(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
  * @param value_2 2ое число
  * @param result результат деления
  * @result 0 - OK,
- * 1 - число слишком
- * 2 - число слишком
+ * 1 - число слишком велико или равно бесконечности
+ * 2 - число слишком мало или равно отрицательной бесконечности
+ * 3 - деление на 0
  */
-int s21_div(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
-  int result_code = 0;
-  s21_decimal tmp_result = {0};
+// int s21_div(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
+//   if (check_decimal_for_zero(value_2))
+//     return 3;
+//   int result_code = 0;
+//   int shift_count = 0;
+//   s21_decimal tmp_result = {0};
+//   s21_decimal _value_1, _value_2, remainder_of_division;
+//   // copy_decimal(value_1, &_value_1);
+//   // copy_decimal(value_2, &_value_2);
+//   reset_decimal(&remainder_of_division);
+//   reset_decimal(&tmp_result);
+//   normalize_scale(&value_1, &value_2);
+//   _value_1 = abs_decimal(_value_1);
+//   _value_2 = abs_decimal(_value_2);
+
+//   remainder_of_division = integer_quotient(_value_1, _value_2, &tmp_result);
 
 
-  reset_decimal(&tmp_result);
-  normalize_scale(&value_1, &value_2);
-  if (s21_is_greater(value_1, value_2)) {
-    while () 
-  }
-  return result_code;
-}
+
+//   return result_code;
+// }

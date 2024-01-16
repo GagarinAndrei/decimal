@@ -39,4 +39,8 @@ void set_scale(s21_decimal *dst, int scale);
 int increase_scale(s21_decimal *value);
 int mult_decimal_to_ten_n_times(s21_decimal *decimal, int number);
 int decrease_scale(s21_decimal *value);
+
+s21_decimal integer_quotient(s21_decimal dividend, s21_decimal divisor, s21_decimal *result);
+void decimal_pow_of_two(int pow, s21_decimal *result);
+
 #endif
