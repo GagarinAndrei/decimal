@@ -26,14 +26,14 @@ END_TEST
 
 START_TEST(s21_is_not_equal_4) {
   s21_decimal value_1 = {{0, 0, 0, 0}};
-  s21_decimal value_2 = {{0, 0, 0, 0x80000000}};
+  s21_decimal value_2 = {{0, 0, 0, MINUS}};
   int return_value = s21_is_not_equal(value_1, value_2);
   ck_assert_int_eq(return_value, 0);
 }
 END_TEST
 
 START_TEST(s21_is_not_equal_5) {
-  s21_decimal value_1 = {{0, 0, 0, 0x80000000}};
+  s21_decimal value_1 = {{0, 0, 0, MINUS}};
   s21_decimal value_2 = {{0, 0, 0, 0}};
   int return_value = s21_is_not_equal(value_1, value_2);
   ck_assert_int_eq(return_value, 0);

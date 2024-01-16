@@ -23,10 +23,8 @@ int s21_is_greater(s21_decimal value_1, s21_decimal value_2) {
       }
     }
   }
-  if (is_positive_decimal(value_1) && !is_positive_decimal(value_2))
-    flag = 1;
-  if (!is_positive_decimal(value_1) && is_positive_decimal(value_2))
-    flag = 0;
+  if (is_positive_decimal(value_1) && !is_positive_decimal(value_2)) flag = 1;
+  if (!is_positive_decimal(value_1) && is_positive_decimal(value_2)) flag = 0;
   if (!is_positive_decimal(value_1) && !is_positive_decimal(value_2))
     flag = !flag;
   if (check_decimal_for_zero(value_1) && check_decimal_for_zero(value_2)) {
@@ -42,19 +40,17 @@ int s21_is_greater(s21_decimal value_1, s21_decimal value_2) {
  */
 int s21_is_less(s21_decimal value_1, s21_decimal value_2) {
   int flag = 0;
+    normalize_scale(&value_1, &value_2);
   for (int bit = 95; bit >= 0; bit--) {
     if (get_bit(value_1, bit) != get_bit(value_2, bit)) {
-
       if (get_bit(value_1, bit) < get_bit(value_2, bit)) {
         flag = 1;
       }
       break;
     }
   }
-  if (is_positive_decimal(value_1) && !is_positive_decimal(value_2))
-    flag = 0;
-  if (!is_positive_decimal(value_1) && is_positive_decimal(value_2))
-    flag = 1;
+  if (is_positive_decimal(value_1) && !is_positive_decimal(value_2)) flag = 0;
+  if (!is_positive_decimal(value_1) && is_positive_decimal(value_2)) flag = 1;
   if (!is_positive_decimal(value_1) && !is_positive_decimal(value_2))
     flag = !flag;
   return flag;
@@ -96,6 +92,7 @@ int s21_is_less_or_equal(s21_decimal value_1, s21_decimal value_2) {
  */
 int s21_is_equal(s21_decimal value_1, s21_decimal value_2) {
   int flag = 1;
+  normalize_scale(&value_1, &value_2);
   for (int bit = 95; bit >= 0; bit--) {
     if (get_bit(value_1, bit) != get_bit(value_2, bit)) {
       flag = 0;
@@ -120,6 +117,7 @@ int s21_is_equal(s21_decimal value_1, s21_decimal value_2) {
  */
 int s21_is_not_equal(s21_decimal value_1, s21_decimal value_2) {
   int flag = 0;
+    normalize_scale(&value_1, &value_2);
   for (int bit = 95; bit >= 0; bit--) {
     if (get_bit(value_1, bit) != get_bit(value_2, bit)) {
       flag = 1;

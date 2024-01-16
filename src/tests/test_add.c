@@ -73,8 +73,8 @@ START_TEST(s21_add_6) {
 END_TEST
 
 START_TEST(s21_add_7) {
-  s21_decimal value_1 = {{0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0x80000000}};
-  s21_decimal value_2 = {{1, 1, 1, 0x80000000}};
+  s21_decimal value_1 = {{0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, MINUS}};
+  s21_decimal value_2 = {{1, 1, 1, MINUS}};
   s21_decimal result = {0};
   int return_value = s21_add(value_1, value_2, &result);
   ck_assert_int_eq(return_value, 2);
@@ -90,7 +90,6 @@ START_TEST(s21_add_8) {
   s21_from_decimal_to_int(result, &z);
   ck_assert_int_eq(return_value, 0);
   ck_assert_int_eq(z, -5);
-
 }
 END_TEST
 

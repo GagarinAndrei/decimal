@@ -4,9 +4,7 @@ int main(void) {
   int failed = 0;
 
   Suite *s21_decimal_test[] = {
-      test_add(),
-       test_sub(),
-       test_mul(),
+      test_add(), test_sub(), test_mul(),
       //  test_div(),
       test_is_less(), test_is_less_or_equal(), test_is_greater(),
       test_is_greater_or_equal(), test_is_equal(), test_is_not_equal(),

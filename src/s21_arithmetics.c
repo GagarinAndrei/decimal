@@ -134,3 +134,25 @@ int s21_mul(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
 
   return error_code;
 }
+
+/**
+ * Деление двух s21_decimal
+ * @param value_1 1ое число
+ * @param value_2 2ое число
+ * @param result результат деления
+ * @result 0 - OK,
+ * 1 - число слишком
+ * 2 - число слишком
+ */
+int s21_div(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
+  int result_code = 0;
+  s21_decimal tmp_result = {0};
+
+
+  reset_decimal(&tmp_result);
+  normalize_scale(&value_1, &value_2);
+  if (s21_is_greater(value_1, value_2)) {
+    while () 
+  }
+  return result_code;
+}

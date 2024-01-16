@@ -9,7 +9,7 @@ START_TEST(s21_is_less_1) {
 END_TEST
 
 START_TEST(s21_is_less_2) {
-  s21_decimal value_1 = {{123457u, 654u, 0xFFFFFFFF, 0x80000000}};
+  s21_decimal value_1 = {{123457u, 654u, 0xFFFFFFFF, MINUS}};
   s21_decimal value_2 = {{123456u, 654u, 0xFFFFFFFF, 0}};
   int return_value = s21_is_less(value_1, value_2);
   ck_assert_int_eq(return_value, 1);
@@ -33,8 +33,8 @@ START_TEST(s21_is_less_4) {
 END_TEST
 
 START_TEST(s21_is_less_5) {
-  s21_decimal value_1 = {{123456, 6, 0xFFFFFFFF, 0x80000000}};
-  s21_decimal value_2 = {{123, 6, 0xFFFFFFFF, 0x80000000}};
+  s21_decimal value_1 = {{123456, 6, 0xFFFFFFFF, MINUS}};
+  s21_decimal value_2 = {{123, 6, 0xFFFFFFFF, MINUS}};
   int return_value = s21_is_less(value_1, value_2);
   ck_assert_int_eq(return_value, 1);
 }
@@ -49,7 +49,7 @@ START_TEST(s21_is_less_6) {
 END_TEST
 
 START_TEST(s21_is_less_7) {
-  s21_decimal value_1 = {{123456, 6, 0xFFFFFFFF, 0x80000000}};
+  s21_decimal value_1 = {{123456, 6, 0xFFFFFFFF, MINUS}};
   s21_decimal value_2 = {{123456, 6, 0xFFFFFFFF, 0}};
   int return_value = s21_is_less(value_1, value_2);
   ck_assert_int_eq(return_value, 1);

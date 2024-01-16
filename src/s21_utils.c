@@ -1,7 +1,8 @@
 #include "s21_utils.h"
 
-#include "s21_decimal.h"
 #include <stdio.h>
+
+#include "s21_decimal.h"
 
 /**
  * Получить значение нужного бита s21_decimal
@@ -207,10 +208,8 @@ void sub_smaller_from_larger(s21_decimal value_1, s21_decimal value_2,
 void set_minus_to_decimal(s21_decimal *dst) { dst->bits[3] |= MINUS; }
 
 int digits(int n) {
-  if (n < 0)
-    n *= -1;
-  if (n < 10)
-    return 1;
+  if (n < 0) n *= -1;
+  if (n < 10) return 1;
 
   return 1 + digits(n / 10);
 }
@@ -229,7 +228,7 @@ void normalize_scale(s21_decimal *value_1, s21_decimal *value_2) {
     }
     if (scale_2 > scale_1) {
       if (0 == increase_scale(value_1)) {
-      // printf("+++++++++++++++++\n");
+        // printf("+++++++++++++++++\n");
         decrease_scale(value_2);
       }
     }
@@ -295,8 +294,7 @@ void set_scale(s21_decimal *dst, int scale) {
 
 int increase_scale(s21_decimal *value) {
   int success_code = 1;
-  if (get_scale(*value) >= MAX_SCALE)
-    return 0;
+  if (get_scale(*value) >= MAX_SCALE) return 0;
   s21_decimal tmp_eight, tmp_two;
   copy_decimal(*value, &tmp_eight);
   copy_decimal(*value, &tmp_two);
@@ -311,7 +309,7 @@ int increase_scale(s21_decimal *value) {
     if (0 != s21_add(tmp_eight, tmp_two, value)) {
       success_code = 0;
     }
-  set_scale(value, get_scale(*value) + 1);
+    set_scale(value, get_scale(*value) + 1);
   }
   return success_code;
 }
@@ -345,7 +343,7 @@ int decrease_scale(s21_decimal *value) {
   if (check_decimal_for_zero(*value) || !get_scale(*value)) {
     return -1;
   }
-  int remainder = 0; // остаток
+  int remainder = 0;  // остаток
   s21_decimal result;
   reset_decimal(&result);
 

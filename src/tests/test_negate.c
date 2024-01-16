@@ -1,7 +1,7 @@
 #include "test.h"
 
 START_TEST(s21_negate_1) {
-  s21_decimal value_2 = {{0, 0, 1, 0x80000000}};
+  s21_decimal value_2 = {{0, 0, 1, MINUS}};
   s21_decimal value_1 = {{0, 0, 1, 0}};
   s21_decimal result = {0};
   int return_value = s21_negate(value_2, &result);
@@ -11,7 +11,7 @@ START_TEST(s21_negate_1) {
 END_TEST
 
 START_TEST(s21_negate_2) {
-  s21_decimal value_2 = {{0, 0, 1, 0x80000000}};
+  s21_decimal value_2 = {{0, 0, 1, MINUS}};
   s21_decimal value_1 = {{0, 0, 1, 0}};
   s21_decimal result = {0};
   int return_value = s21_negate(value_1, &result);

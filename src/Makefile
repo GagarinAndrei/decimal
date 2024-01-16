@@ -28,10 +28,10 @@ gcov_report: clean s21_decimal.a
 	./s21_decimal
 	lcov -t "./s21_decimal" -o report.info --no-external -c -d .
 	genhtml -o report report.info
-	firefox ./report/index.html
+	open ./report/index.html
 
 clean:
-	rm -rf s21_decimal *.a $(OBJECTS) a.out *.gcno *.gcda report report.info
+	rm -rf s21_decimal *.a $(OBJECTS) a.out *.gcno *.gcda report report.info *.dSYM
 
 valgrind: clean test
 	valgrind --tool=memcheck --leak-check=yes  ./s21_decimal

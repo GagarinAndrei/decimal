@@ -1,7 +1,7 @@
 #include "test.h"
 
 START_TEST(s21_mul_1) {
-  s21_decimal value_2 = {{0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0x80000000}};
+  s21_decimal value_2 = {{0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, MINUS}};
   s21_decimal value_1 = {0};
   s21_decimal result = {0};
   int return_value = s21_mul(value_2, value_1, &result), result_int = 0;
@@ -12,8 +12,8 @@ START_TEST(s21_mul_1) {
 END_TEST
 
 START_TEST(s21_mul_2) {
-  s21_decimal value_2 = {{0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0x80000000}};
-  s21_decimal value_1 = {{0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0x80000000}};
+  s21_decimal value_2 = {{0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, MINUS}};
+  s21_decimal value_1 = {{0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, MINUS}};
   s21_decimal result = {0};
   int return_value = s21_mul(value_2, value_1, &result);
   ck_assert_int_eq(return_value, 1);
@@ -22,7 +22,7 @@ END_TEST
 
 START_TEST(s21_mul_3) {
   s21_decimal value_2 = {{0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0}};
-  s21_decimal value_1 = {{0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0x80000000}};
+  s21_decimal value_1 = {{0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, MINUS}};
   s21_decimal result = {0};
   int return_value = s21_mul(value_2, value_1, &result);
   ck_assert_int_eq(return_value, 2);

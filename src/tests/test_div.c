@@ -1,8 +1,8 @@
 #include "test.h"
 
 START_TEST(s21_div_1) {
-  s21_decimal value_1 = {{0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0x80000000}};
-  s21_decimal value_2 = {{0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0x80000000}};
+  s21_decimal value_1 = {{0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, MINUS}};
+  s21_decimal value_2 = {{0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, MINUS}};
   s21_decimal result = {0};
   int return_value = s21_div(value_1, value_2, &result);
   float result_float = 0;
@@ -13,7 +13,7 @@ START_TEST(s21_div_1) {
 END_TEST
 
 START_TEST(s21_div_2) {
-  s21_decimal value_2 = {{0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0x80000000}};
+  s21_decimal value_2 = {{0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, MINUS}};
   s21_decimal value_1 = {0};
   s21_decimal result = {0};
   s21_from_int_to_decimal(1, &value_1);
@@ -24,7 +24,7 @@ START_TEST(s21_div_2) {
 END_TEST
 
 START_TEST(s21_div_3) {
-  s21_decimal value_2 = {{0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0x80000000}};
+  s21_decimal value_2 = {{0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, MINUS}};
   s21_decimal value_1 = {0};
   s21_decimal result = {0};
   int return_value = s21_div(value_2, value_1, &result);
@@ -48,7 +48,7 @@ START_TEST(s21_div_4) {
 END_TEST
 
 START_TEST(s21_div_5) {
-  s21_decimal value_1 = {{0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0x80000000}};
+  s21_decimal value_1 = {{0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, MINUS}};
   s21_decimal value_2 = {0};
   s21_decimal result = {0};
   int return_value = s21_div(value_2, value_1, &result);
@@ -57,7 +57,7 @@ START_TEST(s21_div_5) {
 END_TEST
 
 START_TEST(s21_div_6) {
-  s21_decimal value_1 = {{0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0x80000000}};
+  s21_decimal value_1 = {{0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, MINUS}};
   s21_decimal value_2 = {0};
   s21_decimal result = {0};
   s21_from_float_to_decimal(0.1, &value_2);
