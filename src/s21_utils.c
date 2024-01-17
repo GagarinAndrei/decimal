@@ -111,6 +111,7 @@ void print_bits_decimal(s21_decimal number) {
   for (int i = 0; i < BYTES_IN_DECIMAL; i++) {
     print_bits(number.bits[i]);
   }
+  printf("\n");
 }
 
 /**
@@ -236,29 +237,13 @@ void normalize_scale(s21_decimal *value_1, s21_decimal *value_2) {
       }
     }
   }
-
-  // if (scale_1 <= MAX_SCALE && scale_2 <= MAX_SCALE ) {
-  //   if (scale_1 < scale_2) {
-  //     scale_1 += dif_scale;
-  //     success_code = mult_decimal_to_ten_n_times(number_1, dif_scale);
-  //     // if (!success_code) {
-  //     //   scale_1 -=dif_scale;
-  //     //   div_decimal_to_ten_n_times(number_1, dif_scale);
-  //     // }
-  //     set_scale(number_1, scale_1);
-  //   } else {
-  //     scale_2 += dif_scale;
-  //     success_code = mult_decimal_to_ten_n_times(number_2, dif_scale);
-  //     set_scale(number_2, scale_2);
-  //   }
-  // }
 }
+
 int is_mantissa_max(s21_decimal value) {
   s21_decimal max_decimal = {{0xffffffff, 0xffffffff, 0xffffffff, 0}};
   return (s21_is_equal(max_decimal, abs_decimal(value))) ? 1 : 0;
 }
 
-// void normalize_scale(s21_decimal *value_1, s21_decimal *value_2) {
 void normalize_mantissa(s21_decimal *value_1, s21_decimal *value_2) {
   int scale_1, scale_2;
   int is_mantissa_mult = 1;
@@ -295,6 +280,12 @@ void set_scale(s21_decimal *dst, int scale) {
   dst->bits[3] |= (SCALE & (scale << 16));
 }
 
+/**
+ * Увеличение scale Decimal на 1
+ * @param value указатель на число, в котором увеличивается scale
+ * @return остаток от деления, либо -1 в случае если scale == 0 или Decimal
+ == 0
+*/
 int increase_scale(s21_decimal *value) {
   int success_code = 1;
   if (get_scale(*value) >= MAX_SCALE)
@@ -306,7 +297,6 @@ int increase_scale(s21_decimal *value) {
     success_code = 0;
   }
   if (!left_bit_shift_decimal(&tmp_two)) {
-    // printf("++++++++++++++\n");
     success_code = 0;
   }
   if (success_code) {
@@ -318,25 +308,34 @@ int increase_scale(s21_decimal *value) {
   return success_code;
 }
 
-// int mult_decimal_to_ten_n_times(s21_decimal *decimal, int number) {
-//   int error_code = 1;
-//   for (int i = 0; i < number; i++) {
-//     error_code = mult_decimal_to_ten(decimal);
-//     if (0 == error_code)
-//       break;
-//   }
-//   return error_code;
-// }
+int mult_decimal_to_ten(s21_decimal *value) {
+  int error_code = 1;
+  s21_decimal tmp_eight, tmp_two;
+  copy_decimal(*value, &tmp_eight);
+  copy_decimal(*value, &tmp_two);
+  if (!left_bit_shift_N_decimal(&tmp_eight, 3)) {
+    error_code = 0;
+  }
+  if (!left_bit_shift_decimal(&tmp_two)) {
+    error_code = 0;
+  }
+  if (error_code) {
+    if (0 != s21_add(tmp_eight, tmp_two, value)) {
+      error_code = 0;
+    }
+  }
+  return error_code;
+}
 
-// /**
-//  * Увеличение scale Decimal на 1
-//  * @param value указатель на число, в котором увеличивается scale
-//  * @return остаток от деления, либо -1 в случае если scale == 0 или Decimal
-//  == 0
-// */
-// int increase_scale(s21_decimal *value) {
-
-// }
+int mult_decimal_to_ten_n_times(s21_decimal *decimal, int number) {
+  int error_code = 1;
+  for (int i = 0; i < number; i++) {
+    error_code = mult_decimal_to_ten(decimal);
+    if (0 == error_code)
+      break;
+  }
+  return error_code;
+}
 
 /**
  * Уменьшение scale Decimal на 1
@@ -371,50 +370,68 @@ int decrease_scale(s21_decimal *value) {
 
 s21_decimal integer_quotient(s21_decimal dividend, s21_decimal divisor,
                              s21_decimal *result) {
-  //
   int exp = 0;
-  s21_decimal power_of_two = {0};
-  //
+  s21_decimal pow_of_two = {0};
   s21_decimal remainder, last_value_of_quotient, remainder_of_division = {0};
   copy_decimal(divisor, &remainder);
 
-  while (s21_is_greater(dividend, divisor)) {
+  while (s21_is_greater_or_equal(dividend, divisor)) {
     while (s21_is_less_or_equal(remainder, dividend)) {
       copy_decimal(remainder, &last_value_of_quotient);
       left_bit_shift_decimal(&remainder);
+      exp++;
     }
+    exp--;
     s21_sub(dividend, last_value_of_quotient, &remainder);
-    s21_from_decimal_to_int(remainder, &exp);
-    printf("EXP = %d\n", exp);
-    //
-    decimal_pow_of_two(exp,&power_of_two);
-    print_bits_decimal(power_of_two);
-    printf("\n");
-    //
+    decimal_pow_of_two(exp, &pow_of_two);
 
-    s21_add(power_of_two, *result, result);
-    s21_from_int_to_decimal(1, &power_of_two);
+    s21_add(pow_of_two, *result, result);
+    reset_decimal(&pow_of_two);
     copy_decimal(remainder, &dividend);
     copy_decimal(remainder, &remainder_of_division);
     copy_decimal(divisor, &remainder);
+    exp = 0;
   }
 
   return remainder_of_division;
 }
 
+void fractional_quitient(s21_decimal remainder, s21_decimal divisor,
+                         s21_decimal *result) {
+  int scale = 0;
+  s21_decimal integer_result = {0};
+  reset_decimal(result);
+
+  while (!check_decimal_for_zero(remainder) && scale < MAX_SCALE) {
+    while (s21_is_less(remainder, divisor) && scale < MAX_SCALE) {
+      mult_decimal_to_ten(&remainder);
+      scale++;
+    }
+
+    remainder = integer_quotient(remainder, divisor, &integer_result);
+    printf("-=integer_result=-\n");
+    print_bits_decimal(integer_result);
+    if (!check_decimal_for_zero(remainder))
+      mult_decimal_to_ten(&integer_result);
+    s21_add(*result, integer_result, result);
+    printf("-=result=-\n");
+    print_bits_decimal(*result);
+    printf("-=remainder=-\n");
+    print_bits_decimal(remainder);
+    reset_decimal(&integer_result);
+  }
+
+  result->bits[3] |= (scale << 16);
+}
+
 void decimal_pow_of_two(int pow, s21_decimal *result) {
   s21_decimal two;
+  reset_decimal(result);
   s21_from_int_to_decimal(2, &two);
+  copy_decimal(two, result);
   if (pow == 0) {
     s21_from_int_to_decimal(1, result);
   } else {
-    // for (int i = 1; i < pow; i++) {
-      // printf("SHIFT = %d\n", i);
-      left_bit_shift_N_decimal(&two, pow - 1);
-      // print_bits_decimal(two);
-      // printf("\n");
-    // }
-    copy_decimal(two, result);
-    // result = &two;
+    left_bit_shift_N_decimal(result, pow - 1);
   }
 }

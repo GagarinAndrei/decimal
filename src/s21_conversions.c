@@ -4,6 +4,7 @@
 #define FLOAT_ACCURACY 7  // 7 значимых цифр по условию задачи
 
 int s21_from_int_to_decimal(int src, s21_decimal *dst) {
+  reset_decimal(dst);
   if (isnan((float)src) || isinf((float)src) || !dst) return 1;
   if (src < 0) set_bit(dst, 127);
   int number = abs(src);

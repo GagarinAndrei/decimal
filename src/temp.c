@@ -8,28 +8,39 @@
 // // 79,228,162,514,264,337,593,543,950,335
 
 int main() {
-  // int result_int = 0;
   s21_decimal result = {0};
   reset_decimal(&result);
-  s21_decimal remainder = {0};
-  s21_decimal value_1 = {{19, 0, 0, 0}};
-  s21_decimal value_2 = {{2, 0, 0, 0}};
-  // int return_value = s21_sub(value_1, value_2, &result);
-  // s21_from_decimal_to_int(result, &result_int);
-  remainder = integer_quotient(value_1, value_2, &result);
-  // decimal_pow_of_two(3, &result);
-  printf("VALUE_1\n");
-  print_bits_decimal(value_1);
-  printf("\n");
-  printf("VALUE_2\n");
-  print_bits_decimal(value_2);
-  printf("\n");
+  // s21_decimal remainder = {0};
+  s21_decimal value_1 = {{1, 0, 0, 0}};
+  s21_decimal value_2 = {{11, 0, 0, 0}};
+
+  // remainder = integer_quotient(value_1, value_2, &result);
+  fractional_quitient(value_1, value_2, &result);
+  // printf("VALUE_1\n");
+  // print_bits_decimal(value_1);
+  // printf("VALUE_2\n");
+  // print_bits_decimal(value_2);
   printf("RESULT\n");
   print_bits_decimal(result);
-  printf("\n");
-  print_bits_decimal(remainder);
-  // printf("RETURN_VALUE = %d\n", return_value);
-  // printf("RESULT_INT = %d\n", result_int);
+  // printf("REMAINDER\n");
+  // print_bits_decimal(remainder);
+  // decimal_pow_of_two(0, &result);
+  // printf("\n");
+  // printf("POWER_OF_TWO\n");
+  // print_bits_decimal(result);
+  // printf("\n");
+
+  // int res = 23456345;
+  // for (int i = 0; i < 5; i++) {
+
+  // reset_decimal(&result);
+  // s21_from_int_to_decimal(res, &result);
+  // print_bits_decimal(result);
+  // printf("\n");
+  // s21_from_decimal_to_int(result, &res);
+  // printf("%d\n", res);
+  // }
+
 
   return 0;
 }
