@@ -149,7 +149,6 @@ int s21_div(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
   if (check_decimal_for_zero(value_2))
     return 3;
   int result_code = 0;
-  // int shift_count = 0;
   s21_decimal tmp_result_int = {0};
   s21_decimal tmp_result_frac = {0};
   s21_decimal dividend, divisor, remainder_of_division;
@@ -160,8 +159,16 @@ int s21_div(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
   dividend = abs_decimal(value_1);
   divisor = abs_decimal(value_2);
 
-  remainder_of_division = integer_quotient(dividend, divisor, &tmp_result_int);
-  fractional_quitient(remainder_of_division, divisor, &tmp_result_frac);
+  if (s21_is_less(dividend, divisor)) {
+    fractional_quitient(dividend, divisor, &tmp_result_frac);
+  } else {
+    remainder_of_division =
+        integer_quotient(dividend, divisor, &tmp_result_int);
+    fractional_quitient(remainder_of_division, divisor, &tmp_result_frac);
+  }
+  // print_bits_decimal(tmp_result_int);
+  // print_bits_decimal(tmp_result_frac);
+
   s21_add(tmp_result_int, tmp_result_frac, result);
 
   if (is_positive_decimal(value_1) != is_positive_decimal(value_2))

@@ -402,8 +402,8 @@ void fractional_quitient(s21_decimal remainder, s21_decimal divisor,
   int exponent = 0; //
   // int tmp_scale_final;//
   s21_decimal integer_result = {0};
-  s21_decimal tmp_result = {0};                   //
-  s21_decimal tmp_scale_decimal = {{1, 0, 0, 0}}; //
+  // s21_decimal tmp_result = {0};                   //
+  // s21_decimal tmp_scale_decimal = {{1, 0, 0, 0}}; //
   reset_decimal(result);
 
   while (!check_decimal_for_zero(remainder) && scale < MAX_SCALE) {
@@ -415,24 +415,24 @@ void fractional_quitient(s21_decimal remainder, s21_decimal divisor,
     remainder = integer_quotient(remainder, divisor, &integer_result);
     // printf("-=integer_result=-\n");
     // print_bits_decimal(integer_result);
-    if (!check_decimal_for_zero(remainder)) {
-      // mult_decimal_to_ten(&integer_result);
-      mult_decimal_to_ten_n_times(&tmp_scale_decimal, exponent);
-      printf("%d\n", exponent);
-      // print_bits_decimal(tmp_scale_decimal);
-      // tmp_scale_final = pow(10, tmp_scale);
-      exponent++;
-      // s21_from_int_to_decimal(tmp_scale_final, &tmp_scale_decimal);
-      s21_mul(integer_result, tmp_scale_decimal, &tmp_result);
-    }
-    s21_add(*result, tmp_result, result);
+    // if (!check_decimal_for_zero(remainder)) {
+    // mult_decimal_to_ten(&integer_result);
+    mult_decimal_to_ten(result);
+    // printf("%d\n", exponent);
+    // print_bits_decimal(tmp_scale_decimal);
+    // tmp_scale_final = pow(10, tmp_scale);
+    ++exponent;
+    // s21_from_int_to_decimal(tmp_scale_final, &tmp_scale_decimal);
+    // }
+    // s21_mul(integer_result, tmp_scale_decimal, &tmp_result);
+    s21_add(*result, integer_result, result);
     // s21_add(*result, integer_result, result);
     // printf("-=result=-\n");
     // print_bits_decimal(*result);
     // printf("-=remainder=-\n");
     // print_bits_decimal(remainder);
-    reset_decimal(&tmp_scale_decimal);
-    set_bit(&tmp_scale_decimal, 0);
+    // reset_decimal(&tmp_scale_decimal);
+    // set_bit(&tmp_scale_decimal, 0);
     reset_decimal(&integer_result);
   }
 

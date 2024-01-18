@@ -11,8 +11,8 @@ int main() {
   s21_decimal result = {0};
   reset_decimal(&result);
   // s21_decimal remainder = {0};
-  s21_decimal value_1 = {{10, 0, 0, 0}};
-  s21_decimal value_2 = {{3, 0, 0, 0}};
+  s21_decimal value_1 = {{935, 0, 0, 0}};
+  s21_decimal value_2 = {{8, 0, 0, 0}};
 
   // remainder = integer_quotient(value_1, value_2, &result);
   // fractional_quitient(value_1, value_2, &result);
@@ -43,6 +43,5 @@ int main() {
   // printf("%d\n", res);
   // }
 
-
-//   return 0;
+  //   return 0;
 }
