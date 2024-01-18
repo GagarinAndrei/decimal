@@ -1,7 +1,7 @@
 #include "test.h"
 
 START_TEST(s21_floor_1) {
-  s21_decimal value_2 = {{0xFFFFFFFF, 0, 0xFFFFFFFF, 0x80000000}};
+  s21_decimal value_2 = {{0xFFFFFFFF, 0, 0xFFFFFFFF, MINUS}};
   s21_decimal result = {0};
   int return_value = s21_floor(value_2, &result);
   ck_assert_int_eq(return_value, 0);

@@ -1,7 +1,7 @@
 #include "test.h"
 
 START_TEST(s21_sub_1) {
-  s21_decimal value_1 = {{0, 0, 0, 0x80000000}};
+  s21_decimal value_1 = {{0, 0, 0, MINUS}};
   s21_decimal value_2 = {{0, 0, 0, 0}};
   s21_decimal result = {0};
   int return_value = s21_sub(value_1, value_2, &result), x = 0;
@@ -47,8 +47,8 @@ START_TEST(s21_sub_4) {
 END_TEST
 
 START_TEST(s21_sub_5) {
-  s21_decimal value_1 = {{0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0x80000000}};
-  s21_decimal value_2 = {{0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0x80000000}};
+  s21_decimal value_1 = {{0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, MINUS}};
+  s21_decimal value_2 = {{0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, MINUS}};
   s21_decimal result = {0};
   int return_value = s21_sub(value_1, value_2, &result);
   ck_assert_int_eq(result.bits[0] + result.bits[1] + result.bits[2], 0);
@@ -72,7 +72,7 @@ START_TEST(s21_sub_6) {
 END_TEST
 
 START_TEST(s21_sub_7) {
-  s21_decimal value_1 = {{0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0x80000000}};
+  s21_decimal value_1 = {{0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, MINUS}};
   s21_decimal value_2 = {{1, 1, 1, 0}};
   s21_decimal result = {0};
   int return_value = s21_sub(value_1, value_2, &result);

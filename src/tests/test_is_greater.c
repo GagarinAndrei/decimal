@@ -26,7 +26,7 @@ END_TEST
 
 START_TEST(s21_is_greater_4) {
   s21_decimal value_1 = {{0, 0, 0, 0}};
-  s21_decimal value_2 = {{0, 0, 0, 0x80000000}};
+  s21_decimal value_2 = {{0, 0, 0, MINUS}};
   int return_value = s21_is_greater(value_1, value_2);
   ck_assert_int_eq(return_value, 0);
 }
@@ -42,7 +42,7 @@ END_TEST
 
 START_TEST(s21_is_greater_6) {
   s21_decimal value_1 = {{123456, 1, 0xFFFFFFFF, 0}};
-  s21_decimal value_2 = {{123456, 1, 0xFFFFFFFF, 0x10000}};
+  s21_decimal value_2 = {{123456, 1, 0xFFFFFFFF, 0x00010000}};
   int return_value = s21_is_greater(value_1, value_2);
   ck_assert_int_eq(return_value, 1);
 }
@@ -57,15 +57,15 @@ START_TEST(s21_is_greater_7) {
 END_TEST
 
 START_TEST(s21_is_greater_8) {
-  s21_decimal value_1 = {{234, 0, 0, 0x80000000}};
-  s21_decimal value_2 = {{2, 0, 0, 0x80000000}};
+  s21_decimal value_1 = {{234, 0, 0, MINUS}};
+  s21_decimal value_2 = {{2, 0, 0, MINUS}};
   int return_value = s21_is_greater(value_1, value_2);
   ck_assert_int_eq(return_value, 0);
 }
 END_TEST
 
 START_TEST(s21_is_greater_9) {
-  s21_decimal value_1 = {{234, 0, 0, 0x80000000}};
+  s21_decimal value_1 = {{234, 0, 0, MINUS}};
   s21_decimal value_2 = {{2, 0, 0, 0}};
   int return_value = s21_is_greater(value_1, value_2);
   ck_assert_int_eq(return_value, 0);

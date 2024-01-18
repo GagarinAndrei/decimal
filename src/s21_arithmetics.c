@@ -11,9 +11,9 @@
  * 2 - число слишком мало или равно отрицательной бесконечности
  */
 int s21_add(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
+  int result_code = 0;
   reset_decimal(result);
   normalize_scale(&value_1, &value_2);
-  int result_code = 0;
 
   if (is_positive_decimal(value_1) == is_positive_decimal(value_2)) {
     int one_to_mind = 0;
@@ -44,14 +44,20 @@ int s21_add(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
         }
       }
     }
-    if (!is_positive_decimal(value_1)) { // если оба знака не положительные
+    if (!is_positive_decimal(value_1) &&
+        !is_positive_decimal(value_2)) { // если оба знака не положительные
       set_minus_to_decimal(result);
     }
   }
   if (is_positive_decimal(value_1) != is_positive_decimal(value_2)) {
-    s21_sub(abs_decimal(value_1), abs_decimal(value_2), result);
     if (s21_is_greater(abs_decimal(value_1), abs_decimal(value_2))) {
-      set_minus_to_decimal(result);
+      s21_sub(abs_decimal(value_1), abs_decimal(value_2), result);
+      if (!is_positive_decimal(value_1))
+        set_minus_to_decimal(result);
+    } else {
+      s21_sub(abs_decimal(value_2), abs_decimal(value_1), result);
+      if (!is_positive_decimal(value_2))
+        set_minus_to_decimal(result);
     }
   }
   if (get_scale(value_1))
@@ -73,13 +79,14 @@ int s21_add(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
  * 2 - число слишком мало или равно отрицательной бесконечности
  */
 int s21_sub(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
+  int result_code = 0;
   reset_decimal(result);
   normalize_scale(&value_1, &value_2);
   if (is_positive_decimal(value_1) == is_positive_decimal(value_2)) {
     sub_smaller_from_larger(abs_decimal(value_1), abs_decimal(value_2), result);
     if (s21_is_greater(abs_decimal(value_1), abs_decimal(value_2))) {
       result->bits[3] |= (value_1.bits[3] & MINUS);
-    } else {
+    } else if (s21_is_greater(value_2, value_1)) {
       result->bits[3] |= MINUS;
     }
   } else if (is_positive_decimal(value_1) && !is_positive_decimal(value_2)) {
@@ -88,14 +95,12 @@ int s21_sub(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
     s21_add(abs_decimal(value_1), abs_decimal(value_2), result);
     set_minus_to_decimal(result);
   }
-  
+
   if (get_bit(*result, 96)) {
-    return is_positive_decimal(*result) ? 1 : 2;
+    result_code = is_positive_decimal(*result) ? 1 : 2;
   }
-  return 0;
+  return result_code;
 }
-
-
 
 /**
  * Умножение двух s21_decimal
@@ -105,28 +110,62 @@ int s21_sub(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
  * @result 0 - OK,
  * 1 - число слишком велико или равно бесконечности,
  * 2 - число слишком мало или равно отрицательной бесконечности
-*/
-int s21_mul(s21_decimal value_1, s21_decimal value_2, s21_decimal *result){
+ */
+int s21_mul(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
   int error_code = 0;
-  // normalize_scale(&value_1,&value_2);
   s21_decimal tmp_value;
   normalize_scale(&value_1, &value_2);
   reset_decimal(result);
-  for(int i=0; i<INT_BIT * (BYTES_IN_DECIMAL-1); i++){
-       if(get_bit(value_1,i)){
-           copy_decimal(value_2,&tmp_value); 
-           if(left_bit_shift_N_decimal(&tmp_value,i)){
-           s21_add(*result,tmp_value,result);
-           }
-           else {
-             error_code = (is_positive_decimal(value_1) != is_positive_decimal(value_2))  ? 2 : 1;
-           }
-       }
+  for (int i = 0; i < INT_BIT * (BYTES_IN_DECIMAL - 1); i++) {
+    if (get_bit(value_1, i)) {
+      copy_decimal(value_2, &tmp_value);
+      if (left_bit_shift_N_decimal(&tmp_value, i)) {
+        s21_add(*result, tmp_value, result);
+      } else {
+        error_code =
+            (is_positive_decimal(value_1) != is_positive_decimal(value_2)) ? 2
+                                                                           : 1;
       }
-      if(is_positive_decimal(value_1) != is_positive_decimal(value_2)){
-      
-        set_minus_to_decimal(result);
-      }
-   
-      return error_code;
+    }
   }
+  if (is_positive_decimal(value_1) != is_positive_decimal(value_2)) {
+    set_minus_to_decimal(result);
+  }
+
+  return error_code;
+}
+
+/**
+ * Деление двух s21_decimal
+ * @param value_1 1ое число
+ * @param value_2 2ое число
+ * @param result результат деления
+ * @result 0 - OK,
+ * 1 - число слишком велико или равно бесконечности
+ * 2 - число слишком мало или равно отрицательной бесконечности
+ * 3 - деление на 0
+ */
+int s21_div(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
+  if (check_decimal_for_zero(value_2))
+    return 3;
+  int result_code = 0;
+  // int shift_count = 0;
+  s21_decimal tmp_result_int = {0};
+  s21_decimal tmp_result_frac = {0};
+  s21_decimal dividend, divisor, remainder_of_division;
+  reset_decimal(&remainder_of_division);
+  reset_decimal(&tmp_result_int);
+  reset_decimal(&tmp_result_frac);
+  normalize_scale(&value_1, &value_2);
+  dividend = abs_decimal(value_1);
+  divisor = abs_decimal(value_2);
+
+  remainder_of_division = integer_quotient(dividend, divisor, &tmp_result_int);
+  fractional_quitient(remainder_of_division, divisor, &tmp_result_frac);
+  s21_add(tmp_result_int, tmp_result_frac, result);
+
+  if (is_positive_decimal(value_1) != is_positive_decimal(value_2))
+    set_minus_to_decimal(result);
+
+  return result_code;
+}

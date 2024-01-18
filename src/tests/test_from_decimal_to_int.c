@@ -24,7 +24,7 @@ START_TEST(s21_from_decimal_to_int_3) {
   int src = 0;
   int temp = 0;
   int return_value = 0;
-  s21_decimal value_1 = {{0x80000000, 0, 0, 0}};
+  s21_decimal value_1 = {{MINUS, 0, 0, 0}};
   s21_from_decimal_to_int(value_1, &temp);
   return_value = (src == temp);
   ck_assert_int_eq(return_value, 1);
