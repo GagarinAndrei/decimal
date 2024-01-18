@@ -203,7 +203,8 @@ void sub_smaller_from_larger(s21_decimal value_1, s21_decimal value_2,
   }
 }
 
-void set_minus_to_decimal(s21_decimal *dst) { dst->bits[3] |= MINUS; }
+void set_minus_to_decimal(s21_decimal *dst) { 
+  dst->bits[3] |= MINUS; }
 
 int digits(int n) {
   if (n < 0)
