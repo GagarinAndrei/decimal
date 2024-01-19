@@ -1,5 +1,3 @@
-// // #include <stdio.h>
-
 #include <stdio.h>
 
 #include "s21_decimal.h"
@@ -44,5 +42,5 @@ int main() {
   // }
 
 
-//   return 0;
+  return 0;
 }

@@ -411,14 +411,14 @@ void fractional_quitient(s21_decimal remainder, s21_decimal divisor,
       mult_decimal_to_ten(&remainder);
       scale++;
     }
-
+    
     remainder = integer_quotient(remainder, divisor, &integer_result);
     // printf("-=integer_result=-\n");
     // print_bits_decimal(integer_result);
     if (!check_decimal_for_zero(remainder)) {
       // mult_decimal_to_ten(&integer_result);
       mult_decimal_to_ten_n_times(&tmp_scale_decimal, exponent);
-      printf("%d\n", exponent);
+      // printf("%d\n", exponent);
       // print_bits_decimal(tmp_scale_decimal);
       // tmp_scale_final = pow(10, tmp_scale);
       exponent++;
