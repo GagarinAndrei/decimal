@@ -5,7 +5,7 @@ int main(void) {
 
   Suite *s21_decimal_test[] = {
       test_add(), test_sub(), test_mul(),
-      //  test_div(),
+       test_div(),
       test_is_less(), test_is_less_or_equal(), test_is_greater(),
       test_is_greater_or_equal(), test_is_equal(), test_is_not_equal(),
       test_from_int_to_decimal(), test_from_float_to_decimal(),

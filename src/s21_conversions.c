@@ -1,5 +1,6 @@
 #include "s21_decimal.h"
 #include "s21_utils.h"
+#include <math.h>
 
 #define FLOAT_ACCURACY 7  // 7 значимых цифр по условию задачи
 

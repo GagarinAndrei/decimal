@@ -3,10 +3,9 @@
 #define S21_DECIMAL_H
 #define INT_BIT 32
 #define BYTES_IN_DECIMAL 4
-#define MINUS 0x80000000  // 10000000 00000000 00000000 00000000
+#define MINUS 0x80000000  // 10000000 0000git 0000 00000000 00000000
 #define SCALE 0x00ff0000  // 00000000 11111111 00000000 00000000
 
-#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 
