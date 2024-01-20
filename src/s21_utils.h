@@ -10,6 +10,7 @@
 int get_bit(s21_decimal value, int bit);
 void set_bit(s21_decimal *value, int bit);
 void unset_bit(s21_decimal *value, int bit);
+void true_set_bit(s21_decimal *value, int bit, int index_of_bit);
 
 void print_bits(int n);
 void print_bits_decimal(s21_decimal number);

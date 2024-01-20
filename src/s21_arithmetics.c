@@ -146,30 +146,62 @@ int s21_mul(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
  * 3 - деление на 0
  */
 int s21_div(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
+  int start_index_of_dividend;
+  int is_bit_set = 0;
+  s21_decimal quotient;
+  s21_decimal tmp_dividend;
+  s21_decimal divisor;
+  copy_decimal(value_2, &divisor);
+  reset_decimal(&tmp_dividend);
+  reset_decimal(&quotient);
+
   if (check_decimal_for_zero(value_2))
     return 3;
   int result_code = 0;
-  s21_decimal tmp_result_int = {0};
-  s21_decimal tmp_result_frac = {0};
-  s21_decimal dividend, divisor, remainder_of_division;
-  reset_decimal(&remainder_of_division);
-  reset_decimal(&tmp_result_int);
-  reset_decimal(&tmp_result_frac);
   normalize_scale(&value_1, &value_2);
-  dividend = abs_decimal(value_1);
-  divisor = abs_decimal(value_2);
 
-  if (s21_is_less(dividend, divisor)) {
-    fractional_quitient(dividend, divisor, &tmp_result_frac);
-  } else {
-    remainder_of_division =
-        integer_quotient(dividend, divisor, &tmp_result_int);
-    fractional_quitient(remainder_of_division, divisor, &tmp_result_frac);
+  for (int i = 95; i >= 0; i--) {
+    if (get_bit(value_1, i)) {
+      start_index_of_dividend = i;
+      set_bit(&tmp_dividend, 0);
+    }
+    break;
   }
-  // print_bits_decimal(tmp_result_int);
-  // print_bits_decimal(tmp_result_frac);
 
-  s21_add(tmp_result_int, tmp_result_frac, result);
+  for (int i = start_index_of_dividend; i >= 0; i--) {
+    // left_bit_shift_decimal(&quotient);
+    if (s21_is_greater(value_2, tmp_dividend)) {
+      left_bit_shift_decimal(&quotient);
+      left_bit_shift_decimal(&tmp_dividend);
+      true_set_bit(&tmp_dividend, get_bit(value_1, i - 1), 0);
+    } else {
+      set_bit(&quotient, 0);
+      is_bit_set = 1;
+      s21_sub(tmp_dividend, divisor, &reminder); //остановились на пятом пункте
+    }
+  }
+
+  // s21_decimal tmp_result_int = {0};
+  // s21_decimal tmp_result_frac = {0};
+  // s21_decimal dividend, divisor, remainder_of_division;
+  // reset_decimal(&remainder_of_division);
+  // reset_decimal(&tmp_result_int);
+  // reset_decimal(&tmp_result_frac);
+  // normalize_scale(&value_1, &value_2);
+  // dividend = abs_decimal(value_1);
+  // divisor = abs_decimal(value_2);
+
+  // if (s21_is_less(dividend, divisor)) {
+  //   fractional_quitient(dividend, divisor, &tmp_result_frac);
+  // } else if (s21_is_greater(dividend, divisor)) {
+  //   remainder_of_division =
+  //       integer_quotient(dividend, divisor, &tmp_result_int);
+  //   fractional_quitient(remainder_of_division, divisor, &tmp_result_frac);
+  // }
+  // if (s21_is_not_equal(dividend, divisor))
+  //   s21_add(tmp_result_int, tmp_result_frac, result);
+  // else
+  //   s21_from_int_to_decimal(1, result);
 
   if (is_positive_decimal(value_1) != is_positive_decimal(value_2))
     set_minus_to_decimal(result);

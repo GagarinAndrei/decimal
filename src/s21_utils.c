@@ -1,6 +1,7 @@
 #include "s21_utils.h"
 
 #include <stdio.h>
+#include <sys/types.h>
 
 #include "s21_decimal.h"
 
@@ -18,6 +19,17 @@ int get_bit(s21_decimal value, int bit) {
   result = (value.bits[index] & mask) ? 1 : 0;
 
   return result;
+}
+
+void true_set_bit(s21_decimal *value, int bit, int index_of_bit) {
+  int index = index_of_bit / 32;
+  if (bit) {
+    unsigned int mask = 1 << (index_of_bit % 32);
+    value->bits[index] |= mask;
+  } else {
+    unsigned int mask = ~(1 << (index_of_bit % 32));
+    value->bits[index] &= mask;
+  }
 }
 
 /**
@@ -232,7 +244,6 @@ void normalize_scale(s21_decimal *value_1, s21_decimal *value_2) {
     }
     if (scale_2 > scale_1) {
       if (0 == increase_scale(value_1)) {
-        // printf("+++++++++++++++++\n");
         decrease_scale(value_2);
       }
     }
@@ -244,34 +255,34 @@ int is_mantissa_max(s21_decimal value) {
   return (s21_is_equal(max_decimal, abs_decimal(value))) ? 1 : 0;
 }
 
-void normalize_mantissa(s21_decimal *value_1, s21_decimal *value_2) {
-  int scale_1, scale_2;
-  int is_mantissa_mult = 1;
-  s21_decimal _value_1, _value_2;
-  copy_decimal(*value_1, &_value_1);
-  copy_decimal(*value_2, &_value_2);
-  scale_1 = get_scale(*value_1);
-  scale_2 = get_scale(*value_2);
-  if (is_mantissa_max(_value_1)) {
-    is_mantissa_mult = 0;
-  }
-  while (scale_1 != scale_2 && is_mantissa_mult) {
-    if (is_mantissa_mult) {
-      if (!increase_scale(&_value_1)) {
-        is_mantissa_mult = 0;
-      } else {
-        scale_1++;
-        // set_scale(value_1, scale_1);
-      }
-    }
-    if (!is_mantissa_mult) {
-      decrease_scale(&_value_2);
-      scale_2--;
-    }
-  }
-  copy_decimal(_value_1, value_1);
-  copy_decimal(_value_2, value_2);
-}
+// void normalize_mantissa(s21_decimal *value_1, s21_decimal *value_2) {
+//   int scale_1, scale_2;
+//   int is_mantissa_mult = 1;
+//   s21_decimal _value_1, _value_2;
+//   copy_decimal(*value_1, &_value_1);
+//   copy_decimal(*value_2, &_value_2);
+//   scale_1 = get_scale(*value_1);
+//   scale_2 = get_scale(*value_2);
+//   if (is_mantissa_max(_value_1)) {
+//     is_mantissa_mult = 0;
+//   }
+//   while (scale_1 != scale_2 && is_mantissa_mult) {
+//     if (is_mantissa_mult) {
+//       if (!increase_scale(&_value_1)) {
+//         is_mantissa_mult = 0;
+//       } else {
+//         scale_1++;
+//         // set_scale(value_1, scale_1);
+//       }
+//     }
+//     if (!is_mantissa_mult) {
+//       decrease_scale(&_value_2);
+//       scale_2--;
+//     }
+//   }
+//   copy_decimal(_value_1, value_1);
+//   copy_decimal(_value_2, value_2);
+// }
 
 int get_scale(s21_decimal value) { return (value.bits[3] & SCALE) >> 16; }
 
@@ -308,6 +319,38 @@ int increase_scale(s21_decimal *value) {
   return success_code;
 }
 
+/**
+ * Уменьшение scale Decimal на 1
+ * @param value указатель на число, в котором уменьшается scale
+ * @return остаток от деления, либо -1 в случае если scale == 0 или Decimal == 0
+ */
+int decrease_scale(s21_decimal *value) {
+  if (check_decimal_for_zero(*value) || !get_scale(*value)) {
+    return -1;
+  }
+  int remainder = 0; // остаток
+  s21_decimal result;
+  reset_decimal(&result);
+
+  for (int i = 95; i >= 0; i--) {
+    remainder <<= 1;
+    left_bit_shift_decimal(&result);
+    if (get_bit(*value, i)) {
+      remainder++;
+    }
+    if (remainder - 10 >= 0) {
+      set_bit(&result, 0);
+      remainder -= 10;
+    }
+    print_bits_decimal(result);
+  }
+  result.bits[3] = value->bits[3];
+
+  set_scale(&result, get_scale(*value) - 1);
+  copy_decimal(result, value);
+  return remainder;
+}
+
 int mult_decimal_to_ten(s21_decimal *value) {
   int error_code = 1;
   s21_decimal tmp_eight, tmp_two;
@@ -337,37 +380,6 @@ int mult_decimal_to_ten_n_times(s21_decimal *decimal, int number) {
   return error_code;
 }
 
-/**
- * Уменьшение scale Decimal на 1
- * @param value указатель на число, в котором уменьшается scale
- * @return остаток от деления, либо -1 в случае если scale == 0 или Decimal == 0
- */
-int decrease_scale(s21_decimal *value) {
-  if (check_decimal_for_zero(*value) || !get_scale(*value)) {
-    return -1;
-  }
-  int remainder = 0; // остаток
-  s21_decimal result;
-  reset_decimal(&result);
-
-  for (int i = 95; i >= 0; i--) {
-    remainder <<= 1;
-    left_bit_shift_decimal(&result);
-    if (get_bit(*value, i)) {
-      remainder++;
-    }
-    if (remainder - 10 >= 0) {
-      set_bit(&result, 0);
-      remainder -= 10;
-    }
-  }
-  result.bits[3] = value->bits[3];
-
-  set_scale(&result, get_scale(*value) - 1);
-  copy_decimal(result, value);
-  return remainder;
-}
-
 s21_decimal integer_quotient(s21_decimal dividend, s21_decimal divisor,
                              s21_decimal *result) {
   int exp = 0;
@@ -376,7 +388,7 @@ s21_decimal integer_quotient(s21_decimal dividend, s21_decimal divisor,
   copy_decimal(divisor, &remainder);
 
   while (s21_is_greater_or_equal(dividend, divisor)) {
-    while (s21_is_less_or_equal(remainder, dividend)) {
+    while (s21_is_less_or_equal(remainder, dividend) && exp <= MAX_SCALE) {
       copy_decimal(remainder, &last_value_of_quotient);
       left_bit_shift_decimal(&remainder);
       exp++;
@@ -394,6 +406,9 @@ s21_decimal integer_quotient(s21_decimal dividend, s21_decimal divisor,
   }
 
   return remainder_of_division;
+  // int remainder = 0;
+
+  // return remainder;
 }
 
 void fractional_quitient(s21_decimal remainder, s21_decimal divisor,
@@ -411,7 +426,7 @@ void fractional_quitient(s21_decimal remainder, s21_decimal divisor,
       mult_decimal_to_ten(&remainder);
       scale++;
     }
-    
+
     remainder = integer_quotient(remainder, divisor, &integer_result);
     // printf("-=integer_result=-\n");
     // print_bits_decimal(integer_result);
