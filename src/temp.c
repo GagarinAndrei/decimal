@@ -6,25 +6,25 @@
 // // // 79,228,162,514,264,337,593,543,950,335
 
 int main() {
-  // s21_decimal result = {0};
-  // reset_decimal(&result);
+  s21_decimal result = {0};
+  reset_decimal(&result);
   // s21_decimal remainder = {0};
-  s21_decimal value_1 = {{1000, 0, 0, 0x00020000}};
-  // s21_decimal value_2 = {{8, 0, 0, 0}};
+  s21_decimal value_1 = {{21, 0, 0, 0}};
+  s21_decimal value_2 = {{3, 0, 0, 0}};
   // s21_decimal value_1 = {{0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0}};
   // s21_decimal value_2 = {{2, 0, 0, 0}};
 
   // remainder = integer_quotient(value_1, value_2, &result);
   // fractional_quitient(value_1, value_2, &result);
-  // s21_div(value_1, value_2, &result);
+  s21_div(value_1, value_2, &result);
   // printf("VALUE_1\n");
   // print_bits_decimal(value_1);
   // printf("VALUE_2\n");
   // print_bits_decimal(value_2);
-  for (int i = 0; i < 8; i++)
-    decrease_scale(&value_1);
+  // for (int i = 0; i < 8; i++)
+  //   decrease_scale(&value_1);
   printf("RESULT\n");
-  print_bits_decimal(value_1);
+  print_bits_decimal(result);
   // printf("REMAINDER\n");
   // print_bits_decimal(remainder);
   // decimal_pow_of_two(0, &result);

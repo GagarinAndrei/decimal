@@ -1,3 +1,5 @@
+#include <stdio.h>
+
 #include "s21_decimal.h"
 #include "s21_utils.h"
 
@@ -45,23 +47,20 @@ int s21_add(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
       }
     }
     if (!is_positive_decimal(value_1) &&
-        !is_positive_decimal(value_2)) { // если оба знака не положительные
+        !is_positive_decimal(value_2)) {  // если оба знака не положительные
       set_minus_to_decimal(result);
     }
   }
   if (is_positive_decimal(value_1) != is_positive_decimal(value_2)) {
     if (s21_is_greater(abs_decimal(value_1), abs_decimal(value_2))) {
       s21_sub(abs_decimal(value_1), abs_decimal(value_2), result);
-      if (!is_positive_decimal(value_1))
-        set_minus_to_decimal(result);
+      if (!is_positive_decimal(value_1)) set_minus_to_decimal(result);
     } else {
       s21_sub(abs_decimal(value_2), abs_decimal(value_1), result);
-      if (!is_positive_decimal(value_2))
-        set_minus_to_decimal(result);
+      if (!is_positive_decimal(value_2)) set_minus_to_decimal(result);
     }
   }
-  if (get_scale(value_1))
-    set_scale(result, get_scale(value_1));
+  if (get_scale(value_1)) set_scale(result, get_scale(value_1));
 
   if (get_bit(*result, 96)) {
     result_code = is_positive_decimal(*result) ? 1 : 2;
@@ -147,16 +146,17 @@ int s21_mul(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
  */
 int s21_div(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
   int start_index_of_dividend;
-  int is_bit_set = 0;
+  // int is_bit_set = 0;
   s21_decimal quotient;
   s21_decimal tmp_dividend;
   s21_decimal divisor;
+  s21_decimal reminder;
   copy_decimal(value_2, &divisor);
   reset_decimal(&tmp_dividend);
   reset_decimal(&quotient);
+  reset_decimal(&reminder);
 
-  if (check_decimal_for_zero(value_2))
-    return 3;
+  if (check_decimal_for_zero(value_2)) return 3;
   int result_code = 0;
   normalize_scale(&value_1, &value_2);
 
@@ -164,22 +164,36 @@ int s21_div(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
     if (get_bit(value_1, i)) {
       start_index_of_dividend = i;
       set_bit(&tmp_dividend, 0);
+      break;
     }
-    break;
   }
 
   for (int i = start_index_of_dividend; i >= 0; i--) {
     // left_bit_shift_decimal(&quotient);
-    if (s21_is_greater(value_2, tmp_dividend)) {
+    printf("%d\n", i);
+    if (s21_is_greater(divisor, tmp_dividend)) {
       left_bit_shift_decimal(&quotient);
+
+      printf("QUOTIENT\n");
+      print_bits_decimal(quotient);
+
       left_bit_shift_decimal(&tmp_dividend);
       true_set_bit(&tmp_dividend, get_bit(value_1, i - 1), 0);
+
+      printf("TMP_DIVIDEND\n");
+      print_bits_decimal(tmp_dividend);
+
     } else {
       set_bit(&quotient, 0);
-      is_bit_set = 1;
-      s21_sub(tmp_dividend, divisor, &reminder); //остановились на пятом пункте
+      printf("QUOTIENT\n");
+      print_bits_decimal(quotient);
+      s21_sub(tmp_dividend, divisor, &tmp_dividend);  // остановились на пятом
+      // пункте
+      printf("TMP_DIVIDEND\n");
+      print_bits_decimal(tmp_dividend);
     }
   }
+  copy_decimal(quotient, result);
 
   // s21_decimal tmp_result_int = {0};
   // s21_decimal tmp_result_frac = {0};

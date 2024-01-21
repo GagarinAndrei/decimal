@@ -39,5 +39,5 @@ clang:
 	clang-format -i -style=google $(SOURCES) *.h tests/*.c tests/*.h
 
 main: clean
-	$(GCC) $(CFALGS) $(SOURCES) -o s21_decimal
+	$(GCC) $(CFALGS) $(SOURCES) $(CHECKFLAGS) -o s21_decimal
 	./s21_decimal
