@@ -31,6 +31,7 @@ int s21_from_decimal_to_int(s21_decimal src, int *dst) {
  * 1 - ошибка конвертации
  */
 int s21_from_float_to_decimal(float src, s21_decimal *dst) {
+  int result_code = 0;
   int exponent = 0;
   unsigned int intValue = (int)src;
   float fraction = src - intValue;
@@ -55,10 +56,10 @@ int s21_from_float_to_decimal(float src, s21_decimal *dst) {
 
   intValue = intValue * pow(10, exponent) + fraction;
 
+  // if (exponent > MAX_SCALE) result_code = 1;
   dst->bits[0] = intValue;
   dst->bits[3] = exponent << 16;
-
-  return 0;
+  return result_code;
 }
 
 /**

@@ -342,7 +342,7 @@ int decrease_scale(s21_decimal *value) {
       set_bit(&result, 0);
       remainder -= 10;
     }
-    print_bits_decimal(result);
+    // print_bits_decimal(result);
   }
   result.bits[3] = value->bits[3];
 
@@ -380,79 +380,79 @@ int mult_decimal_to_ten_n_times(s21_decimal *decimal, int number) {
   return error_code;
 }
 
-s21_decimal integer_quotient(s21_decimal dividend, s21_decimal divisor,
-                             s21_decimal *result) {
-  int exp = 0;
-  s21_decimal pow_of_two = {0};
-  s21_decimal remainder, last_value_of_quotient, remainder_of_division = {0};
-  copy_decimal(divisor, &remainder);
+// s21_decimal integer_quotient(s21_decimal dividend, s21_decimal divisor,
+//                              s21_decimal *result) {
+//   int exp = 0;
+//   s21_decimal pow_of_two = {0};
+//   s21_decimal remainder, last_value_of_quotient, remainder_of_division = {0};
+//   copy_decimal(divisor, &remainder);
 
-  while (s21_is_greater_or_equal(dividend, divisor)) {
-    while (s21_is_less_or_equal(remainder, dividend) && exp <= MAX_SCALE) {
-      copy_decimal(remainder, &last_value_of_quotient);
-      left_bit_shift_decimal(&remainder);
-      exp++;
-    }
-    exp--;
-    s21_sub(dividend, last_value_of_quotient, &remainder);
-    decimal_pow_of_two(exp, &pow_of_two);
+//   while (s21_is_greater_or_equal(dividend, divisor)) {
+//     while (s21_is_less_or_equal(remainder, dividend) && exp <= MAX_SCALE) {
+//       copy_decimal(remainder, &last_value_of_quotient);
+//       left_bit_shift_decimal(&remainder);
+//       exp++;
+//     }
+//     exp--;
+//     s21_sub(dividend, last_value_of_quotient, &remainder);
+//     decimal_pow_of_two(exp, &pow_of_two);
 
-    s21_add(pow_of_two, *result, result);
-    reset_decimal(&pow_of_two);
-    copy_decimal(remainder, &dividend);
-    copy_decimal(remainder, &remainder_of_division);
-    copy_decimal(divisor, &remainder);
-    exp = 0;
-  }
+//     s21_add(pow_of_two, *result, result);
+//     reset_decimal(&pow_of_two);
+//     copy_decimal(remainder, &dividend);
+//     copy_decimal(remainder, &remainder_of_division);
+//     copy_decimal(divisor, &remainder);
+//     exp = 0;
+//   }
 
-  return remainder_of_division;
-  // int remainder = 0;
+//   return remainder_of_division;
+//   // int remainder = 0;
 
-  // return remainder;
-}
+//   // return remainder;
+// }
 
-void fractional_quitient(s21_decimal remainder, s21_decimal divisor,
-                         s21_decimal *result) {
-  int scale = 0;
-  int exponent = 0; //
-  // int tmp_scale_final;//
-  s21_decimal integer_result = {0};
-  // s21_decimal tmp_result = {0};                   //
-  // s21_decimal tmp_scale_decimal = {{1, 0, 0, 0}}; //
-  reset_decimal(result);
+// void fractional_quitient(s21_decimal remainder, s21_decimal divisor,
+//                          s21_decimal *result) {
+//   int scale = 0;
+//   int exponent = 0; //
+//   // int tmp_scale_final;//
+//   s21_decimal integer_result = {0};
+//   // s21_decimal tmp_result = {0};                   //
+//   // s21_decimal tmp_scale_decimal = {{1, 0, 0, 0}}; //
+//   reset_decimal(result);
 
-  while (!check_decimal_for_zero(remainder) && scale < MAX_SCALE) {
-    while (s21_is_less(remainder, divisor) && scale < MAX_SCALE) {
-      mult_decimal_to_ten(&remainder);
-      scale++;
-    }
+//   while (!check_decimal_for_zero(remainder) && scale < MAX_SCALE) {
+//     while (s21_is_less(remainder, divisor) && scale < MAX_SCALE) {
+//       mult_decimal_to_ten(&remainder);
+//       scale++;
+//     }
 
-    remainder = integer_quotient(remainder, divisor, &integer_result);
-    // printf("-=integer_result=-\n");
-    // print_bits_decimal(integer_result);
-    // if (!check_decimal_for_zero(remainder)) {
-    // mult_decimal_to_ten(&integer_result);
-    mult_decimal_to_ten(result);
-    // printf("%d\n", exponent);
-    // print_bits_decimal(tmp_scale_decimal);
-    // tmp_scale_final = pow(10, tmp_scale);
-    ++exponent;
-    // s21_from_int_to_decimal(tmp_scale_final, &tmp_scale_decimal);
-    // }
-    // s21_mul(integer_result, tmp_scale_decimal, &tmp_result);
-    s21_add(*result, integer_result, result);
-    // s21_add(*result, integer_result, result);
-    // printf("-=result=-\n");
-    // print_bits_decimal(*result);
-    // printf("-=remainder=-\n");
-    // print_bits_decimal(remainder);
-    // reset_decimal(&tmp_scale_decimal);
-    // set_bit(&tmp_scale_decimal, 0);
-    reset_decimal(&integer_result);
-  }
+//     remainder = integer_quotient(remainder, divisor, &integer_result);
+//     // printf("-=integer_result=-\n");
+//     // print_bits_decimal(integer_result);
+//     // if (!check_decimal_for_zero(remainder)) {
+//     // mult_decimal_to_ten(&integer_result);
+//     mult_decimal_to_ten(result);
+//     // printf("%d\n", exponent);
+//     // print_bits_decimal(tmp_scale_decimal);
+//     // tmp_scale_final = pow(10, tmp_scale);
+//     ++exponent;
+//     // s21_from_int_to_decimal(tmp_scale_final, &tmp_scale_decimal);
+//     // }
+//     // s21_mul(integer_result, tmp_scale_decimal, &tmp_result);
+//     s21_add(*result, integer_result, result);
+//     // s21_add(*result, integer_result, result);
+//     // printf("-=result=-\n");
+//     // print_bits_decimal(*result);
+//     // printf("-=remainder=-\n");
+//     // print_bits_decimal(remainder);
+//     // reset_decimal(&tmp_scale_decimal);
+//     // set_bit(&tmp_scale_decimal, 0);
+//     reset_decimal(&integer_result);
+//   }
 
-  result->bits[3] |= (scale << 16);
-}
+//   result->bits[3] |= (scale << 16);
+// }
 
 void decimal_pow_of_two(int pow, s21_decimal *result) {
   s21_decimal two;

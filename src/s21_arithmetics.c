@@ -177,11 +177,13 @@ int s21_div(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
       s21_sub(remainder, divisor, &remainder);
     }
   }
-  printf("REMAINDER\n");
-  print_bits_decimal(remainder);
-  printf("TMP_REMAINDER\n");
-  print_bits_decimal(tmp_remainder);
-
+  /*-----------------------------------------------------------------------------*/
+  // printf("REMAINDER\n");
+  // print_bits_decimal(remainder);
+  // printf("TMP_REMAINDER\n");
+  // print_bits_decimal(tmp_remainder);
+  /*-----------------------------------------------------------------------------*/
+  set_scale(result, get_scale(dividend));
 
   if (is_positive_decimal(value_1) != is_positive_decimal(value_2))
     set_minus_to_decimal(result);
