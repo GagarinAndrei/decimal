@@ -47,20 +47,23 @@ int s21_add(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
       }
     }
     if (!is_positive_decimal(value_1) &&
-        !is_positive_decimal(value_2)) {  // если оба знака не положительные
+        !is_positive_decimal(value_2)) { // если оба знака не положительные
       set_minus_to_decimal(result);
     }
   }
   if (is_positive_decimal(value_1) != is_positive_decimal(value_2)) {
     if (s21_is_greater(abs_decimal(value_1), abs_decimal(value_2))) {
       s21_sub(abs_decimal(value_1), abs_decimal(value_2), result);
-      if (!is_positive_decimal(value_1)) set_minus_to_decimal(result);
+      if (!is_positive_decimal(value_1))
+        set_minus_to_decimal(result);
     } else {
       s21_sub(abs_decimal(value_2), abs_decimal(value_1), result);
-      if (!is_positive_decimal(value_2)) set_minus_to_decimal(result);
+      if (!is_positive_decimal(value_2))
+        set_minus_to_decimal(result);
     }
   }
-  if (get_scale(value_1)) set_scale(result, get_scale(value_1));
+  if (get_scale(value_1))
+    set_scale(result, get_scale(value_1));
 
   if (get_bit(*result, 96)) {
     result_code = is_positive_decimal(*result) ? 1 : 2;
@@ -145,77 +148,40 @@ int s21_mul(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
  * 3 - деление на 0
  */
 int s21_div(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
-  int start_index_of_dividend;
-  // int is_bit_set = 0;
-  s21_decimal quotient;
-  s21_decimal tmp_dividend;
-  s21_decimal divisor;
-  s21_decimal reminder;
-  copy_decimal(value_2, &divisor);
-  reset_decimal(&tmp_dividend);
-  reset_decimal(&quotient);
-  reset_decimal(&reminder);
+  if (check_decimal_for_zero(value_2))
+    return 3;
 
-  if (check_decimal_for_zero(value_2)) return 3;
   int result_code = 0;
+  s21_decimal dividend;
+  s21_decimal divisor;
+  s21_decimal remainder;
+  s21_decimal tmp_remainder;
+  s21_decimal zero = {{0, 0, 0, 0}};
+  s21_decimal one = {{1, 0, 0, 0}};
+  reset_decimal(&remainder);
+  reset_decimal(&tmp_remainder);
+  reset_decimal(result);
   normalize_scale(&value_1, &value_2);
+  dividend = abs_decimal(value_1);
+  divisor = abs_decimal(value_2);
 
   for (int i = 95; i >= 0; i--) {
-    if (get_bit(value_1, i)) {
-      start_index_of_dividend = i;
-      set_bit(&tmp_dividend, 0);
-      break;
+    left_bit_shift_decimal(&remainder);
+    left_bit_shift_decimal(result);
+    if (get_bit(dividend, i)) {
+      s21_add(remainder, one, &remainder);
+    }
+    s21_sub(remainder, divisor, &tmp_remainder);
+    if (s21_is_greater_or_equal(tmp_remainder, zero)) {
+      set_bit(result, 0);
+      s21_sub(remainder, divisor, &remainder);
     }
   }
+  printf("REMAINDER\n");
+  print_bits_decimal(remainder);
+  printf("TMP_REMAINDER\n");
+  print_bits_decimal(tmp_remainder);
 
-  for (int i = start_index_of_dividend; i >= 0; i--) {
-    // left_bit_shift_decimal(&quotient);
-    printf("%d\n", i);
-    if (s21_is_greater(divisor, tmp_dividend)) {
-      left_bit_shift_decimal(&quotient);
-
-      printf("QUOTIENT\n");
-      print_bits_decimal(quotient);
-
-      left_bit_shift_decimal(&tmp_dividend);
-      true_set_bit(&tmp_dividend, get_bit(value_1, i - 1), 0);
-
-      printf("TMP_DIVIDEND\n");
-      print_bits_decimal(tmp_dividend);
-
-    } else {
-      set_bit(&quotient, 0);
-      printf("QUOTIENT\n");
-      print_bits_decimal(quotient);
-      s21_sub(tmp_dividend, divisor, &tmp_dividend);  // остановились на пятом
-      // пункте
-      printf("TMP_DIVIDEND\n");
-      print_bits_decimal(tmp_dividend);
-    }
-  }
-  copy_decimal(quotient, result);
-
-  // s21_decimal tmp_result_int = {0};
-  // s21_decimal tmp_result_frac = {0};
-  // s21_decimal dividend, divisor, remainder_of_division;
-  // reset_decimal(&remainder_of_division);
-  // reset_decimal(&tmp_result_int);
-  // reset_decimal(&tmp_result_frac);
-  // normalize_scale(&value_1, &value_2);
-  // dividend = abs_decimal(value_1);
-  // divisor = abs_decimal(value_2);
-
-  // if (s21_is_less(dividend, divisor)) {
-  //   fractional_quitient(dividend, divisor, &tmp_result_frac);
-  // } else if (s21_is_greater(dividend, divisor)) {
-  //   remainder_of_division =
-  //       integer_quotient(dividend, divisor, &tmp_result_int);
-  //   fractional_quitient(remainder_of_division, divisor, &tmp_result_frac);
-  // }
-  // if (s21_is_not_equal(dividend, divisor))
-  //   s21_add(tmp_result_int, tmp_result_frac, result);
-  // else
-  //   s21_from_int_to_decimal(1, result);
 
   if (is_positive_decimal(value_1) != is_positive_decimal(value_2))
     set_minus_to_decimal(result);

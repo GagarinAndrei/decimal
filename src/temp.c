@@ -9,10 +9,10 @@ int main() {
   s21_decimal result = {0};
   reset_decimal(&result);
   // s21_decimal remainder = {0};
-  s21_decimal value_1 = {{21, 0, 0, 0}};
+  s21_decimal value_1 = {{5, 0, 0, 0}};
   s21_decimal value_2 = {{3, 0, 0, 0}};
   // s21_decimal value_1 = {{0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0}};
-  // s21_decimal value_2 = {{2, 0, 0, 0}};
+  // s21_decimal value_2 = {{1, 0, 0, 0}};
 
   // remainder = integer_quotient(value_1, value_2, &result);
   // fractional_quitient(value_1, value_2, &result);
