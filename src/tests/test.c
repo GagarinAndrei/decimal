@@ -10,10 +10,10 @@ int main(void) {
       test_is_greater_or_equal(), test_is_equal(), test_is_not_equal(),
       test_from_int_to_decimal(), test_from_float_to_decimal(),
       test_from_decimal_to_int(), test_from_decimal_to_float(),
-      //  test_floor(),
-      //  test_round(),
-      //  test_truncate(),
-      //  test_negate(),
+       test_floor(),
+       test_round(),
+       test_truncate(),
+       test_negate(),
       NULL};
 
   for (int i = 0; s21_decimal_test[i] != NULL; ++i) {
