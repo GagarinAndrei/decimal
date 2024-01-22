@@ -274,3 +274,34 @@ int mult_decimal_to_ten_n_times(s21_decimal *decimal, int number) {
   }
   return error_code;
 }
+
+/**
+ * Уменьшение scale Decimal на 1
+ * @param value указатель на число, в котором уменьшается scale
+ * @return остаток от деления, либо -1 в случае если scale == 0 или Decimal == 0
+*/
+int decrease_scale(s21_decimal *value) {
+  if(check_decimal_for_zero(*value) || !get_scale(*value)) {
+    return -1;
+  }
+  int remainder = 0; // остаток
+  s21_decimal result;
+  reset_decimal(&result);
+
+  for (int i = 95; i >= 0; i--) {
+    remainder <<= 1;
+    left_bit_shift_decimal(&result);
+    if(get_bit(*value, i)) {
+      remainder++;
+    }
+    if(remainder - 10 >= 0) {
+      set_bit(&result, 0);
+      remainder -= 10; 
+    }
+  }
+  result.bits[3] = value->bits[3];
+
+  set_scale(&result, get_scale(*value) - 1);
+  copy_decimal(result, value);
+  return remainder;
+}
